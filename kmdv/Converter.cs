@@ -249,6 +249,9 @@ namespace kmdv
 
 
     }
+    /// <summary>
+    /// Dictionaryでの配列比較に必要です。
+    /// </summary>
     class ArrayEqualityComparer<T> : IEqualityComparer<T[]>
     {
         public bool Equals(T[]? x, T[]? y)
