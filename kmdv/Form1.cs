@@ -22,7 +22,7 @@ namespace kmdv
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            VersionView.Text = "kmdv v0.2.3";
+            VersionView.Text = "kmdv v0.2.4";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             Gettimer.Enabled = true;
@@ -87,7 +87,7 @@ namespace kmdv
                 kcsMaxs[2] = PGAkcsMax;
                 kcsMaxs[3] = PGAkcsSum;
             }
-            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.000} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}";
+            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.000} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
 
 
         }
