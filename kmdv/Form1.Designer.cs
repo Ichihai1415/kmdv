@@ -33,11 +33,14 @@
             MainImage = new PictureBox();
             Text1 = new Label();
             groupBox1 = new GroupBox();
+            VersionView = new Label();
             Text0 = new Label();
             KCSview = new Label();
             Text2 = new Label();
             RAMview = new Label();
             LogView = new TextBox();
+            MSView = new Label();
+            MaxsView = new TextBox();
             ((System.ComponentModel.ISupportInitialize)MainImage).BeginInit();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -67,6 +70,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(VersionView);
             groupBox1.Controls.Add(Text0);
             groupBox1.Controls.Add(Text1);
             groupBox1.Controls.Add(KCSview);
@@ -76,6 +80,16 @@
             groupBox1.TabIndex = 5;
             groupBox1.TabStop = false;
             groupBox1.Text = "KCS";
+            // 
+            // VersionView
+            // 
+            VersionView.AutoSize = true;
+            VersionView.Font = new Font("Yu Gothic UI", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            VersionView.Location = new Point(200, 0);
+            VersionView.Name = "VersionView";
+            VersionView.Size = new Size(62, 13);
+            VersionView.TabIndex = 9;
+            VersionView.Text = "kmdv v0.0.0";
             // 
             // Text0
             // 
@@ -98,19 +112,21 @@
             // Text2
             // 
             Text2.AutoSize = true;
-            Text2.Location = new Point(534, 134);
+            Text2.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            Text2.Location = new Point(528, 134);
             Text2.Name = "Text2";
-            Text2.Size = new Size(61, 60);
+            Text2.Size = new Size(185, 25);
             Text2.TabIndex = 6;
-            Text2.Text = "ram:\r\ntime:";
+            Text2.Text = "ram:                   time:";
             // 
             // RAMview
             // 
-            RAMview.Location = new Point(534, 134);
+            RAMview.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            RAMview.Location = new Point(570, 134);
             RAMview.Name = "RAMview";
-            RAMview.Size = new Size(254, 60);
+            RAMview.Size = new Size(95, 25);
             RAMview.TabIndex = 7;
-            RAMview.Text = " - - - MB\r\n - - - ms";
+            RAMview.Text = "- - - - MB";
             RAMview.TextAlign = ContentAlignment.TopRight;
             // 
             // LogView
@@ -120,23 +136,51 @@
             LogView.BorderStyle = BorderStyle.FixedSingle;
             LogView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             LogView.ForeColor = Color.White;
-            LogView.Location = new Point(534, 197);
+            LogView.Location = new Point(534, 281);
             LogView.Multiline = true;
             LogView.Name = "LogView";
             LogView.ReadOnly = true;
             LogView.ScrollBars = ScrollBars.Vertical;
-            LogView.Size = new Size(260, 196);
+            LogView.Size = new Size(260, 112);
             LogView.TabIndex = 8;
             LogView.TabStop = false;
+            // 
+            // MSView
+            // 
+            MSView.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            MSView.Location = new Point(662, 134);
+            MSView.Name = "MSView";
+            MSView.Size = new Size(138, 25);
+            MSView.TabIndex = 9;
+            MSView.Text = " - - - - ms";
+            MSView.TextAlign = ContentAlignment.TopRight;
+            // 
+            // MaxsView
+            // 
+            MaxsView.AcceptsReturn = true;
+            MaxsView.BackColor = Color.FromArgb(30, 60, 90);
+            MaxsView.BorderStyle = BorderStyle.FixedSingle;
+            MaxsView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            MaxsView.ForeColor = Color.White;
+            MaxsView.Location = new Point(534, 163);
+            MaxsView.Multiline = true;
+            MaxsView.Name = "MaxsView";
+            MaxsView.ReadOnly = true;
+            MaxsView.ScrollBars = ScrollBars.Vertical;
+            MaxsView.Size = new Size(260, 112);
+            MaxsView.TabIndex = 10;
+            MaxsView.TabStop = false;
             // 
             // Form1
             // 
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(30, 60, 90);
             ClientSize = new Size(800, 400);
-            Controls.Add(LogView);
-            Controls.Add(Text2);
+            Controls.Add(MaxsView);
             Controls.Add(RAMview);
+            Controls.Add(Text2);
+            Controls.Add(MSView);
+            Controls.Add(LogView);
             Controls.Add(groupBox1);
             Controls.Add(MainImage);
             Font = new Font("Yu Gothic UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
@@ -163,5 +207,8 @@
         private Label RAMview;
         private TextBox LogView;
         private Label Text0;
+        private Label VersionView;
+        private Label MSView;
+        private TextBox MaxsView;
     }
 }
