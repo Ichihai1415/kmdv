@@ -47,13 +47,13 @@ namespace kmdv
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            VersionView.Text = "kmdv v0.3.0";
+            VersionView.Text = "kmdv v0.3.1";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             Gettimer.Enabled = true;
 
             //setup
-            KCSGraph.DrawMargin = new Margin(0);
+            KCSGraph.DrawMargin = new Margin(10);
             KCSGraph.Tooltip = null;
             KCSGraph.XAxes = new Axis[]
             {
@@ -63,8 +63,7 @@ namespace kmdv
                     NamePaint = new SolidColorPaint(SKColors.White),
                     NameTextSize = 12,
 
-                    LabelsPaint = new SolidColorPaint(SKColors.White),
-                    TextSize = 10,
+                    TextSize = 0,
 
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 }
                 }
@@ -78,7 +77,7 @@ namespace kmdv
                     NameTextSize = 12,
 
                     LabelsPaint = new SolidColorPaint(SKColors.Red),
-                    TextSize = 12,
+                    TextSize = 14,
 
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 }
                 },
@@ -89,9 +88,12 @@ namespace kmdv
                     NameTextSize = 10,
 
                     LabelsPaint = new SolidColorPaint(SKColors.Yellow),
-                    TextSize = 10,
+                    TextSize = 12,
 
-                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 }
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
+
+                    MaxLimit = 1,
+                    MinLimit = 0
                 },
                 new Axis
                 {
@@ -100,9 +102,11 @@ namespace kmdv
                     NameTextSize = 10,
 
                     LabelsPaint = new SolidColorPaint(SKColors.LightGreen),
-                    TextSize = 10,
+                    TextSize = 12,
 
-                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
+
+                    MaxLimit = 1,
+                    MinLimit = 0,
                     Position = AxisPosition.End
                 }
             };
@@ -112,11 +116,11 @@ namespace kmdv
                 {
 
                     Values = GraphValue_acss,
-                    Stroke = new SolidColorPaint(SKColors.Red, 1),
+                    Stroke = new SolidColorPaint(SKColors.Red, 2),
                     GeometrySize = 0,
                     Fill = null,
                     GeometryStroke = null,
-                    ScalesYAt = 0
+                    ScalesYAt = 0,
                 },
                 new LineSeries<ObservableValue?>
                 {
