@@ -1,3 +1,4 @@
+using kmdv.Properties;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Measure;
@@ -6,6 +7,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Media;
 using System.Net;
 using static kmdv.Converter;
 
@@ -44,11 +46,41 @@ namespace kmdv
              new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
              new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0)
         };
+        public static SoundPlayer? player_ac;
+        public static SoundPlayer? player_rs;
+        public static int latestSindo = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            VersionView.Text = "kmdv v0.3.1";
+            VersionView.Text = "kmdv v0.4.0";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+            if (File.Exists("backmap.png"))
+                MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
+            if (!Directory.Exists("sound"))
+                Directory.CreateDirectory("sound");
+
+            if (!File.Exists("sound\\alarm15.wav"))
+                File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
+            if (!File.Exists("sound\\alarm25.wav"))
+                File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
+            if (!File.Exists("sound\\alarm35.wav"))
+                File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
+
+            if (!File.Exists("sound\\s3.wav"))
+                File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
+            if (!File.Exists("sound\\s4.wav"))
+                File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
+            if (!File.Exists("sound\\s5.wav"))
+                File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
+            if (!File.Exists("sound\\s6.wav"))
+                File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
+            if (!File.Exists("sound\\s7.wav"))
+                File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
+            if (!File.Exists("sound\\s8.wav"))
+                File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
+            if (!File.Exists("sound\\s9.wav"))
+                File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             Gettimer.Enabled = true;
 
@@ -205,7 +237,40 @@ namespace kmdv
                 kcsMaxs[2] = PGAkcsMax;
                 kcsMaxs[3] = PGAkcsSum;
             }
-            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.000} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
+            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
+
+            int Sindo = 0;
+            if (SindokcsMax >= 0.95)
+                Sindo = 9;
+            else if (SindokcsMax >= 0.9)
+                Sindo = 8;
+            else if (SindokcsMax >= 0.85)
+                Sindo = 7;
+            else if (SindokcsMax >= 0.8)
+                Sindo = 6;
+            else if (SindokcsMax >= 0.75)
+                Sindo = 5;
+            else if (SindokcsMax >= 0.65)
+                Sindo = 4;
+            else if (SindokcsMax >= 0.55)
+                Sindo = 3;
+            else if (SindokcsMax >= 0.45)
+                Sindo = 2;
+            else if (SindokcsMax >= 0.35)
+                Sindo = 1;
+
+            if (getTime.Second % 2 == 0)
+                if (PGAkcsSum > 5000)
+                    PlaySound("alarm35.wav", true);
+                else if (PGAkcsSum > 2500)
+                    PlaySound("alarm25.wav", true);
+                else if (PGAkcsSum > 1000)
+                    PlaySound("alarm15.wav", true);
+                else {; }//enpty...の回避(適当)
+            if (Sindo > 2 && Sindo - latestSindo > 0)
+                PlaySound($"s{Sindo}.wav", false);
+            latestSindo = Sindo;
+
         }
 
 
@@ -266,7 +331,7 @@ namespace kmdv
                 return new double[] { kcsSum, kcsMax };
 
             }
-            catch (Exception ex)
+            catch (Exception ex)//開始時に例外が起こることがある(起動直後のみ?)
             {
                 Debug.WriteLine(ex.Message);
                 LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcs>\r\n{ex}\r\n{LogView.Text}";
@@ -342,6 +407,63 @@ namespace kmdv
             for (int i = 0; i < 29; i++)
                 GraphValue_rssm[i] = GraphValue_rssm[i + 1];
             GraphValue_rssm[29] = new ObservableValue(value == 0 ? null : value);
+        }
+
+        /// <summary>
+        /// 音声を再生します。
+        /// </summary>
+        /// <remarks>音声は自動でコピーされます。</remarks>
+        /// <param name="fileName">再生するファイル名(sound\\)</param>
+        /// <param name="isAC">kcs(acs-s)の場合True</param>
+        public static void PlaySound(string fileName, bool isAC)
+        {
+            if (!Directory.Exists("sound"))
+                Directory.CreateDirectory("sound");
+
+            if (!File.Exists("sound\\alarm15.wav"))
+                File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
+            if (!File.Exists("sound\\alarm25.wav"))
+                File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
+            if (!File.Exists("sound\\alarm35.wav"))
+                File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
+
+            if (!File.Exists("sound\\s3.wav"))
+                File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
+            if (!File.Exists("sound\\s4.wav"))
+                File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
+            if (!File.Exists("sound\\s5.wav"))
+                File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
+            if (!File.Exists("sound\\s6.wav"))
+                File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
+            if (!File.Exists("sound\\s7.wav"))
+                File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
+            if (!File.Exists("sound\\s8.wav"))
+                File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
+            if (!File.Exists("sound\\s9.wav"))
+                File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+
+            if (isAC)
+            {
+                if (player_ac != null)
+                {
+                    player_ac.Stop();
+                    player_ac.Dispose();
+                    player_ac = null;
+                }
+                player_ac = new SoundPlayer($"sound\\{fileName}");
+                player_ac.Play();
+            }
+            else
+            {
+                if (player_rs != null)
+                {
+                    player_rs.Stop();
+                    player_rs.Dispose();
+                    player_rs = null;
+                }
+                player_rs = new SoundPlayer($"sound\\{fileName}");
+                player_rs.Play();
+            }
         }
     }
 }
