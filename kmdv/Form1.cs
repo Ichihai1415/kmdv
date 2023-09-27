@@ -18,6 +18,10 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
+            VersionView.Text = "kmdv v0.4.1";
+            LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+            if (File.Exists("backmap.png"))
+                MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
         }
 
         public static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>())
@@ -28,34 +32,16 @@ namespace kmdv
         public readonly static int getDelay = 1500;
         public static double[] kcsMaxs = new double[] { 9, 0, 0, 0 };//最後の分/10(切り捨て),rssm,acsm,acss
         public static string kcsMaxsText = "";
-        public static ObservableCollection<ObservableValue> GraphValue_acss = new()
-        {
-            new ObservableValue(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0)
-        };
-        public static ObservableCollection<ObservableValue> GraphValue_acsm = new()
-        {
-            new ObservableValue(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0)
-        };
-        public static ObservableCollection<ObservableValue> GraphValue_rssm = new()
-        {
-            new ObservableValue(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0),
-             new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0), new(0)
-        };
+        public readonly static int GraphValueCount = 60;
+        public static ObservableCollection<ObservableValue> GraphValue_acss = new();
+        public static ObservableCollection<ObservableValue> GraphValue_acsm = new();
+        public static ObservableCollection<ObservableValue> GraphValue_rssm = new();
         public static SoundPlayer? player_ac;
         public static SoundPlayer? player_rs;
         public static int latestSindo = 0;
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            VersionView.Text = "kmdv v0.4.0";
-            LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
-            if (File.Exists("backmap.png"))
-                MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
             if (!Directory.Exists("sound"))
                 Directory.CreateDirectory("sound");
 
@@ -81,9 +67,6 @@ namespace kmdv
             if (!File.Exists("sound\\s9.wav"))
                 File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
 
-            Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
-            Gettimer.Enabled = true;
-
             //setup
             KCSGraph.DrawMargin = new Margin(10);
             KCSGraph.Tooltip = null;
@@ -91,7 +74,7 @@ namespace kmdv
             {
                 new Axis
                 {
-                    Name="time(30s)",
+                    Name="time(60s)",
                     NamePaint = new SolidColorPaint(SKColors.White),
                     NameTextSize = 12,
 
@@ -175,6 +158,16 @@ namespace kmdv
                     ScalesYAt = 2
                 }
             };
+            for (int i = 0; i < GraphValueCount; i++)
+            {
+                GraphValue_acss.Add(new ObservableValue(0));
+                GraphValue_acsm.Add(new ObservableValue(0));
+                GraphValue_rssm.Add(new ObservableValue(0));
+                await Task.Delay(10);
+            }
+
+            Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
+            Gettimer.Enabled = true;//start
         }
 
         private async void Gettimer_Tick(object sender, EventArgs e)
@@ -382,9 +375,9 @@ namespace kmdv
         /// <param name="value">挿入する値。0の場合nullとなります。</param>
         public static void GraphInsert_acss(double value)
         {
-            for (int i = 0; i < 29; i++)
+            for (int i = 0; i < GraphValueCount - 1; i++)
                 GraphValue_acss[i] = GraphValue_acss[i + 1];
-            GraphValue_acss[29] = new ObservableValue(value == 0 ? null : value);
+            GraphValue_acss[GraphValueCount - 1] = new ObservableValue(value == 0 ? null : value);
         }
 
         /// <summary>
@@ -393,9 +386,9 @@ namespace kmdv
         /// <param name="value">挿入する値。0の場合nullとなります。</param>
         public static void GraphInsert_acsm(double value)
         {
-            for (int i = 0; i < 29; i++)
+            for (int i = 0; i < GraphValueCount - 1; i++)
                 GraphValue_acsm[i] = GraphValue_acsm[i + 1];
-            GraphValue_acsm[29] = new ObservableValue(value == 0 ? null : value);
+            GraphValue_acsm[GraphValueCount - 1] = new ObservableValue(value == 0 ? null : value);
         }
 
         /// <summary>
@@ -404,9 +397,9 @@ namespace kmdv
         /// <param name="value">挿入する値。0の場合nullとなります。</param>
         public static void GraphInsert_rssm(double value)
         {
-            for (int i = 0; i < 29; i++)
+            for (int i = 0; i < GraphValueCount - 1; i++)
                 GraphValue_rssm[i] = GraphValue_rssm[i + 1];
-            GraphValue_rssm[29] = new ObservableValue(value == 0 ? null : value);
+            GraphValue_rssm[GraphValueCount - 1] = new ObservableValue(value == 0 ? null : value);
         }
 
         /// <summary>
