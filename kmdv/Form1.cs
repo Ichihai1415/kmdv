@@ -18,16 +18,13 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.1";
+            VersionView.Text = "kmdv v0.4.2";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
         }
 
-        public static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>())
-        {
-            { new int[]{ 0, 0, 0 }, 0 }
-        };
+        public static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>());
         public readonly static HttpClient client = new();
         public readonly static int getDelay = 1500;
         public static double[] kcsMaxs = new double[] { 9, 0, 0, 0 };//最後の分/10(切り捨て),rssm,acsm,acss
@@ -210,8 +207,8 @@ namespace kmdv
             GraphInsert_acsm(PGAkcsMax);
             GraphInsert_rssm(SindokcsMax);
 
-            KCSView_rss.Text = $"{SindokcsMax * 100:0}";
-            KCSView_acs.Text = $"{PGAkcsSum:0}/{PGAkcsMax:0.00}";
+            KCSView_rss.Text = $"*{SindokcsMax * 100:0}".Replace("*0","----").Replace("*","");
+            KCSView_acs.Text = $"*{PGAkcsSum:0}/{PGAkcsMax:0.00}".Replace("*0/", "----/").Replace("/0.00", "/----").Replace("*", "");
             RAMview.Text = $"{Environment.WorkingSet / 1048576d:0.0}";
             MSView.Text = $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0.0}ms";
 
@@ -259,13 +256,11 @@ namespace kmdv
                     PlaySound("alarm25.wav", true);
                 else if (PGAkcsSum > 1000)
                     PlaySound("alarm15.wav", true);
-                else {; }//enpty...の回避(適当)
             if (Sindo > 2 && Sindo - latestSindo > 0)
                 PlaySound($"s{Sindo}.wav", false);
             latestSindo = Sindo;
-
+            //memo:9/28の能登では3の音が鳴らなかった(Sindoを強制的に変えたら鳴る) 要検証
         }
-
 
         /// <summary>
         /// 強震モニタの画像を取得します。
