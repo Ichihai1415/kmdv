@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.2";
+            VersionView.Text = "kmdv v0.4.3";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -91,7 +91,8 @@ namespace kmdv
                     LabelsPaint = new SolidColorPaint(SKColors.Red),
                     TextSize = 14,
 
-                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 }
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
+                    MinLimit = 0
                 },
                 new Axis
                 {
@@ -249,17 +250,19 @@ namespace kmdv
             else if (SindokcsMax >= 0.35)
                 Sindo = 1;
 
-            if (getTime.Second % 2 == 0)
+            if (Sindo > 2 && Sindo - latestSindo > 0)
+                PlaySound($"s{Sindo}.wav", false);
+            else if (getTime.Second % 2 == 0)
                 if (PGAkcsSum > 5000)
                     PlaySound("alarm35.wav", true);
                 else if (PGAkcsSum > 2500)
                     PlaySound("alarm25.wav", true);
                 else if (PGAkcsSum > 1000)
                     PlaySound("alarm15.wav", true);
-            if (Sindo > 2 && Sindo - latestSindo > 0)
-                PlaySound($"s{Sindo}.wav", false);
+            else if(PGAkcsMax>0.5*1000)
+                    PlaySound("pga10+.wav", true);//仮
+
             latestSindo = Sindo;
-            //memo:9/28の能登では3の音が鳴らなかった(Sindoを強制的に変えたら鳴る) 要検証
         }
 
         /// <summary>
@@ -402,7 +405,7 @@ namespace kmdv
         /// </summary>
         /// <remarks>音声は自動でコピーされます。</remarks>
         /// <param name="fileName">再生するファイル名(sound\\)</param>
-        /// <param name="isAC">kcs(acs-s)の場合True</param>
+        /// <param name="isAC">kcs(acs-s/m)の場合True</param>
         public static void PlaySound(string fileName, bool isAC)
         {
             if (!Directory.Exists("sound"))
