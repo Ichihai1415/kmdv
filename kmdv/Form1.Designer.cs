@@ -80,7 +80,7 @@
             groupBox1.Controls.Add(KCSView_acs);
             groupBox1.Location = new Point(534, 35);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(260, 254);
+            groupBox1.Size = new Size(260, 304);
             groupBox1.TabIndex = 5;
             groupBox1.TabStop = false;
             groupBox1.Text = "KCS";
@@ -90,7 +90,7 @@
             KCSGraph.Location = new Point(5, 58);
             KCSGraph.Margin = new Padding(3, 4, 3, 4);
             KCSGraph.Name = "KCSGraph";
-            KCSGraph.Size = new Size(245, 84);
+            KCSGraph.Size = new Size(245, 134);
             KCSGraph.TabIndex = 11;
             // 
             // MaxsView
@@ -100,7 +100,7 @@
             MaxsView.BorderStyle = BorderStyle.FixedSingle;
             MaxsView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             MaxsView.ForeColor = Color.White;
-            MaxsView.Location = new Point(6, 148);
+            MaxsView.Location = new Point(6, 198);
             MaxsView.Multiline = true;
             MaxsView.Name = "MaxsView";
             MaxsView.ReadOnly = true;
@@ -174,12 +174,12 @@
             LogView.BorderStyle = BorderStyle.FixedSingle;
             LogView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             LogView.ForeColor = Color.White;
-            LogView.Location = new Point(534, 294);
+            LogView.Location = new Point(534, 344);
             LogView.Multiline = true;
             LogView.Name = "LogView";
             LogView.ReadOnly = true;
             LogView.ScrollBars = ScrollBars.Vertical;
-            LogView.Size = new Size(260, 100);
+            LogView.Size = new Size(260, 50);
             LogView.TabIndex = 8;
             LogView.TabStop = false;
             // 

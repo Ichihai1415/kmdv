@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.3";
+            VersionView.Text = "kmdv v0.4.4";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -69,9 +69,8 @@ namespace kmdv
             KCSGraph.Tooltip = null;
             KCSGraph.XAxes = new Axis[]
             {
-                new Axis
-                {
-                    Name="time(60s)",
+                new() {
+                    Name = "time(60s)",
                     NamePaint = new SolidColorPaint(SKColors.White),
                     NameTextSize = 12,
 
@@ -82,9 +81,8 @@ namespace kmdv
             };
             KCSGraph.YAxes = new Axis[]
             {
-                new Axis
-                {
-                    Name="kcs (ac-s sum)",
+                new() {
+                    Name = "kcs (ac-s sum)",
                     NamePaint = new SolidColorPaint(SKColors.Red),
                     NameTextSize = 12,
 
@@ -94,9 +92,8 @@ namespace kmdv
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
                     MinLimit = 0
                 },
-                new Axis
-                {
-                    Name="kcs (ac-s max)",
+                new() {
+                    Name = "kcs (ac-s max)",
                     NamePaint = new SolidColorPaint(SKColors.Yellow),
                     NameTextSize = 10,
 
@@ -108,9 +105,8 @@ namespace kmdv
                     MaxLimit = 1,
                     MinLimit = 0
                 },
-                new Axis
-                {
-                    Name="kcs (rs-s max)",
+                new() {
+                    Name = "kcs (rs-s max)",
                     NamePaint = new SolidColorPaint(SKColors.LightGreen),
                     NameTextSize = 10,
 
@@ -199,7 +195,7 @@ namespace kmdv
                 g.DrawImage(PGDImg, 352, 200, 176, 200);
 
             double PGAkcsSum = PGAkcsTask.Result[0];
-            double PGAkcsMax = PGAkcsTask.Result[1];
+            double PGAkcsMax = PGAkcsTask.Result[1];//g=10^(5x-2)
             double SindokcsMax = SindokcsTask.Result;
             MainImage.Image = mainImg;
             g.Dispose();
@@ -208,7 +204,7 @@ namespace kmdv
             GraphInsert_acsm(PGAkcsMax);
             GraphInsert_rssm(SindokcsMax);
 
-            KCSView_rss.Text = $"*{SindokcsMax * 100:0}".Replace("*0","----").Replace("*","");
+            KCSView_rss.Text = $"*{SindokcsMax * 100:0}".Replace("*0", "----").Replace("*", "");
             KCSView_acs.Text = $"*{PGAkcsSum:0}/{PGAkcsMax:0.00}".Replace("*0/", "----/").Replace("/0.00", "/----").Replace("*", "");
             RAMview.Text = $"{Environment.WorkingSet / 1048576d:0.0}";
             MSView.Text = $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0.0}ms";
@@ -253,14 +249,14 @@ namespace kmdv
             if (Sindo > 2 && Sindo - latestSindo > 0)
                 PlaySound($"s{Sindo}.wav", false);
             else if (getTime.Second % 2 == 0)
-                if (PGAkcsSum > 5000)
+                if (PGAkcsSum > 2500)
                     PlaySound("alarm35.wav", true);
-                else if (PGAkcsSum > 2500)
+                else if (PGAkcsSum > 1500)
                     PlaySound("alarm25.wav", true);
-                else if (PGAkcsSum > 1000)
+                else if (PGAkcsSum > 750)
                     PlaySound("alarm15.wav", true);
-            else if(PGAkcsMax>0.5*1000)
-                    PlaySound("pga10+.wav", true);//‰¼
+                else if (PGAkcsMax >= 0.6)
+                    PlaySound("pga10+.wav", true);
 
             latestSindo = Sindo;
         }
