@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.4";
+            VersionView.Text = "kmdv v0.4.5";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -255,8 +255,8 @@ namespace kmdv
                     PlaySound("alarm25.wav", true);
                 else if (PGAkcsSum > 750)
                     PlaySound("alarm15.wav", true);
-                else if (PGAkcsMax >= 0.6)
-                    PlaySound("pga10+.wav", true);
+                else if (PGAkcsMax >= 0.66)//0.6‚Å10 0.66‚Å‚¾‚¢‚½‚¢20 (log10(x)+2)/5
+                    PlaySound("pga20+.wav", true);
 
             latestSindo = Sindo;
         }
