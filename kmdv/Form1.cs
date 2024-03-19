@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.5";
+            VersionView.Text = "kmdv v0.4.6";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -196,69 +196,69 @@ namespace kmdv
 
             double PGAkcsSum = PGAkcsTask.Result[0];
             double PGAkcsMax = PGAkcsTask.Result[1];//g=10^(5x-2)
-            double SindokcsMax = SindokcsTask.Result;
+            double sindokcsMax = SindokcsTask.Result;
             MainImage.Image = mainImg;
             g.Dispose();
 
             GraphInsert_acss(PGAkcsSum);
             GraphInsert_acsm(PGAkcsMax);
-            GraphInsert_rssm(SindokcsMax);
+            GraphInsert_rssm(sindokcsMax);
 
-            KCSView_rss.Text = $"*{SindokcsMax * 100:0}".Replace("*0", "----").Replace("*", "");
+            KCSView_rss.Text = $"*{sindokcsMax * 100:0}".Replace("*0", "----").Replace("*", "");
             KCSView_acs.Text = $"*{PGAkcsSum:0}/{PGAkcsMax:0.00}".Replace("*0/", "----/").Replace("/0.00", "/----").Replace("*", "");
             RAMview.Text = $"{Environment.WorkingSet / 1048576d:0.0}";
-            MSView.Text = $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0.0}ms";
+            MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 1000 ? $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0}ms" : $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0.0}ms";
 
             double min_10 = Math.Floor(getTime.Minute / 10d);
             if (min_10 == kcsMaxs[0])
             {
-                kcsMaxs[1] = Math.Max(kcsMaxs[1], SindokcsMax);
+                kcsMaxs[1] = Math.Max(kcsMaxs[1], sindokcsMax);
                 kcsMaxs[2] = Math.Max(kcsMaxs[2], PGAkcsMax);
                 kcsMaxs[3] = Math.Max(kcsMaxs[3], PGAkcsSum);
             }
-            else
+            else//10•ª‚²‚Æ‚ÉXV
             {
                 kcsMaxsText = MaxsView.Text;
                 kcsMaxs[0] = min_10;
-                kcsMaxs[1] = SindokcsMax;
+                kcsMaxs[1] = sindokcsMax;
                 kcsMaxs[2] = PGAkcsMax;
                 kcsMaxs[3] = PGAkcsSum;
             }
             MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
 
-            int Sindo = 0;
-            if (SindokcsMax >= 0.95)
-                Sindo = 9;
-            else if (SindokcsMax >= 0.9)
-                Sindo = 8;
-            else if (SindokcsMax >= 0.85)
-                Sindo = 7;
-            else if (SindokcsMax >= 0.8)
-                Sindo = 6;
-            else if (SindokcsMax >= 0.75)
-                Sindo = 5;
-            else if (SindokcsMax >= 0.65)
-                Sindo = 4;
-            else if (SindokcsMax >= 0.55)
-                Sindo = 3;
-            else if (SindokcsMax >= 0.45)
-                Sindo = 2;
-            else if (SindokcsMax >= 0.35)
-                Sindo = 1;
+            int sindo = 0;
+            if (sindokcsMax >= 0.95)
+                sindo = 9;
+            else if (sindokcsMax >= 0.9)
+                sindo = 8;
+            else if (sindokcsMax >= 0.85)
+                sindo = 7;
+            else if (sindokcsMax >= 0.8)
+                sindo = 6;
+            else if (sindokcsMax >= 0.75)
+                sindo = 5;
+            else if (sindokcsMax >= 0.65)
+                sindo = 4;
+            else if (sindokcsMax >= 0.55)
+                sindo = 3;
+            else if (sindokcsMax >= 0.45)
+                sindo = 2;
+            else if (sindokcsMax >= 0.35)
+                sindo = 1;
 
-            if (Sindo > 2 && Sindo - latestSindo > 0)
-                PlaySound($"s{Sindo}.wav", false);
+            if (sindo > 2 && sindo - latestSindo > 0)
+                PlaySound($"s{sindo}.wav", false);
             else if (getTime.Second % 2 == 0)
-                if (PGAkcsSum > 2500)
+                if (PGAkcsSum >= 2500)
                     PlaySound("alarm35.wav", true);
-                else if (PGAkcsSum > 1500)
+                else if (PGAkcsSum >= 1500)
                     PlaySound("alarm25.wav", true);
-                else if (PGAkcsSum > 750)
+                else if (PGAkcsSum >= 750)
                     PlaySound("alarm15.wav", true);
                 else if (PGAkcsMax >= 0.66)//0.6‚Å10 0.66‚Å‚¾‚¢‚½‚¢20 (log10(x)+2)/5
                     PlaySound("pga20+.wav", true);
-
-            latestSindo = Sindo;
+            if (sindo != 0)
+                latestSindo = sindo;
         }
 
         /// <summary>
@@ -405,29 +405,31 @@ namespace kmdv
         public static void PlaySound(string fileName, bool isAC)
         {
             if (!Directory.Exists("sound"))
+            {
                 Directory.CreateDirectory("sound");
 
-            if (!File.Exists("sound\\alarm15.wav"))
-                File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
-            if (!File.Exists("sound\\alarm25.wav"))
-                File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
-            if (!File.Exists("sound\\alarm35.wav"))
-                File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
+                if (!File.Exists("sound\\alarm15.wav"))
+                    File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
+                if (!File.Exists("sound\\alarm25.wav"))
+                    File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
+                if (!File.Exists("sound\\alarm35.wav"))
+                    File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
 
-            if (!File.Exists("sound\\s3.wav"))
-                File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
-            if (!File.Exists("sound\\s4.wav"))
-                File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
-            if (!File.Exists("sound\\s5.wav"))
-                File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
-            if (!File.Exists("sound\\s6.wav"))
-                File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
-            if (!File.Exists("sound\\s7.wav"))
-                File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
-            if (!File.Exists("sound\\s8.wav"))
-                File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
-            if (!File.Exists("sound\\s9.wav"))
-                File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+                if (!File.Exists("sound\\s3.wav"))
+                    File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
+                if (!File.Exists("sound\\s4.wav"))
+                    File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
+                if (!File.Exists("sound\\s5.wav"))
+                    File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
+                if (!File.Exists("sound\\s6.wav"))
+                    File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
+                if (!File.Exists("sound\\s7.wav"))
+                    File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
+                if (!File.Exists("sound\\s8.wav"))
+                    File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
+                if (!File.Exists("sound\\s9.wav"))
+                    File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+            }
 
             if (isAC)
             {
