@@ -249,7 +249,7 @@ namespace kmdv
             float r = color.R / 255f;
             float g = color.G / 255f;
             float b = color.B / 255f;
-            float[] list = new float[] { r, g, b };
+            float[] list = [r, g, b];
             float max = list.Max();
             float min = list.Min();
             float h, s, v;
@@ -266,7 +266,7 @@ namespace kmdv
             else
                 s = (max - min) / max;
             v = max;
-            return new float[] { h, s, v };
+            return [h, s, v];
         }
 
         /// <summary>

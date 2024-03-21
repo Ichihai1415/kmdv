@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.6";
+            VersionView.Text = "kmdv v0.4.7";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -27,12 +27,12 @@ namespace kmdv
         public static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>());
         public readonly static HttpClient client = new();
         public readonly static int getDelay = 1500;
-        public static double[] kcsMaxs = new double[] { 9, 0, 0, 0 };//最後の分/10(切り捨て),rssm,acsm,acss
+        public static double[] kcsMaxs = [9, 0, 0, 0];//最後の分/10(切り捨て),rssm,acsm,acss
         public static string kcsMaxsText = "";
         public readonly static int GraphValueCount = 60;
-        public static ObservableCollection<ObservableValue> GraphValue_acss = new();
-        public static ObservableCollection<ObservableValue> GraphValue_acsm = new();
-        public static ObservableCollection<ObservableValue> GraphValue_rssm = new();
+        public static ObservableCollection<ObservableValue> GraphValue_acss = [];
+        public static ObservableCollection<ObservableValue> GraphValue_acsm = [];
+        public static ObservableCollection<ObservableValue> GraphValue_rssm = [];
         public static SoundPlayer? player_ac;
         public static SoundPlayer? player_rs;
         public static int latestSindo = 0;
@@ -119,8 +119,8 @@ namespace kmdv
                     Position = AxisPosition.End
                 }
             };
-            KCSGraph.Series = new ObservableCollection<ISeries>
-            {
+            KCSGraph.Series =
+            [
                 new LineSeries<ObservableValue?>
                 {
 
@@ -151,7 +151,7 @@ namespace kmdv
                     GeometryStroke = null,
                     ScalesYAt = 2
                 }
-            };
+            ];
             for (int i = 0; i < GraphValueCount; i++)
             {
                 GraphValue_acss.Add(new ObservableValue(0));
@@ -296,14 +296,14 @@ namespace kmdv
             {
                 Debug.WriteLine($"image2kcs");
                 if (image.Width != 352 || image.Height != 400)
-                    return new double[] { 0, 0 };
+                    return [0, 0];
                 double kcsSum = 0;
                 double kcsMax = 0;
                 for (int i = 0; i < 352; i++)
                     for (int j = 0; j < 400; j++)
                     {
                         Color color = image.GetPixel(i, j);
-                        int[] colors = new int[] { color.R, color.G, color.B };
+                        int[] colors = [color.R, color.G, color.B];
                         if (colors.Sum() == 0)
                             continue;
                         double kcs;
@@ -317,14 +317,14 @@ namespace kmdv
                         kcsMax = Math.Max(kcsMax, kcs);
                         kcsSum += kcs;
                     }
-                return new double[] { kcsSum, kcsMax };
+                return [kcsSum, kcsMax];
 
             }
             catch (Exception ex)//開始時に例外が起こることがある(起動直後のみ?)
             {
                 Debug.WriteLine(ex.Message);
                 LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcs>\r\n{ex}\r\n{LogView.Text}";
-                return new double[] { 0, 0 };
+                return [0, 0];
             }
         }
 
@@ -347,7 +347,7 @@ namespace kmdv
                     for (int j = 0; j < 400; j++)
                     {
                         Color color = image.GetPixel(i, j);
-                        int[] colors = new int[] { color.R, color.G, color.B };
+                        int[] colors = [color.R, color.G, color.B];
                         if (colors.Sum() == 0)
                             continue;
                         double kcs = (RGB2Sindo[colors] + 3d) / 10d;
