@@ -226,6 +226,8 @@ namespace kmdv
             }
             MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
 
+            if (DateTime.Now - getTime > TimeSpan.FromSeconds(3))//Žæ“¾’x‰„+ˆ—ŽžŠÔ
+                return;//‹­ƒ‚ƒjd‚­‚È‚Á‚ÄŒÃ‚¢‚Ì‚ªÄ¶‚³‚ê‚È‚¢‚æ‚¤‚É
             int sindo = 0;
             if (sindokcsMax >= 0.95)
                 sindo = 9;
@@ -305,8 +307,8 @@ namespace kmdv
                         if (colors.Sum() == 0)
                             continue;
                         double kcs;
-                        if (RGB2kcs.ContainsKey(colors))
-                            kcs = RGB2kcs[colors];
+                        if (RGB2kcs.TryGetValue(colors, out double value))
+                            kcs = value;
                         else
                         {
                             kcs = Color2KCS(colors);
