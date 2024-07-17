@@ -103,6 +103,26 @@ namespace kmdv.Properties {
         /// <summary>
         ///   型 System.Byte[] のローカライズされたリソースを検索します。
         /// </summary>
+        internal static byte[] pga100_wav {
+            get {
+                object obj = ResourceManager.GetObject("pga100_wav", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] pga20_wav {
+            get {
+                object obj = ResourceManager.GetObject("pga20_wav", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
         internal static byte[] s3wav {
             get {
                 object obj = ResourceManager.GetObject("s3wav", resourceCulture);

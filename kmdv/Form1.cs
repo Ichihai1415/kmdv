@@ -1,5 +1,4 @@
 using kmdv.Properties;
-using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
@@ -18,7 +17,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.7";
+            VersionView.Text = "kmdv v0.4.8";
             LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -63,6 +62,11 @@ namespace kmdv
                 File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
             if (!File.Exists("sound\\s9.wav"))
                 File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+
+            if (!File.Exists("sound\\pga20+.wav"))
+                File.WriteAllBytes("sound\\pga100+.wav", Resources.pga20_wav);
+            if (!File.Exists("sound\\pga100+.wav"))
+                File.WriteAllBytes("sound\\pga100+.wav", Resources.pga100_wav);
 
             //setup
             KCSGraph.DrawMargin = new Margin(10);
@@ -255,10 +259,14 @@ namespace kmdv
                     PlaySound("alarm35.wav", true);
                 else if (PGAkcsSum >= 1500)
                     PlaySound("alarm25.wav", true);
-                else if (PGAkcsSum >= 750)
+                else if (PGAkcsSum >= 800)
                     PlaySound("alarm15.wav", true);
-                else if (PGAkcsMax >= 0.66)//0.6‚Å10 0.66‚Å‚¾‚¢‚½‚¢20 (log10(x)+2)/5
-                    PlaySound("pga20+.wav", true);
+                else { }
+            else
+                if (PGAkcsMax >= 0.8)//0.8‚Å100 0.6‚Å10 0.66‚Å‚¾‚¢‚½‚¢20 (log10(x)+2)/5
+                PlaySound("pga100+.wav", true);
+            else if (PGAkcsMax >= 0.66)
+                PlaySound("pga20+.wav", true);
             if (sindo != 0)
                 latestSindo = sindo;
         }
