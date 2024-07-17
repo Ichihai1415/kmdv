@@ -64,7 +64,7 @@ namespace kmdv
                 File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
 
             if (!File.Exists("sound\\pga20+.wav"))
-                File.WriteAllBytes("sound\\pga100+.wav", Resources.pga20_wav);
+                File.WriteAllBytes("sound\\pga20+.wav", Resources.pga20_wav);
             if (!File.Exists("sound\\pga100+.wav"))
                 File.WriteAllBytes("sound\\pga100+.wav", Resources.pga100_wav);
 
