@@ -32,7 +32,10 @@
             Gettimer = new System.Windows.Forms.Timer(components);
             MainImage = new PictureBox();
             Text1 = new Label();
-            groupBox1 = new GroupBox();
+            KCS_GroupBox = new GroupBox();
+            KCSLevel_acsm = new Label();
+            KCSLevel_acss = new Label();
+            KCSLevel_rssm = new Label();
             KCSGraph = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
             MaxsView = new TextBox();
             KCSView_rss = new Label();
@@ -45,7 +48,7 @@
             MSView = new Label();
             Text_loading = new Label();
             ((System.ComponentModel.ISupportInitialize)MainImage).BeginInit();
-            groupBox1.SuspendLayout();
+            KCS_GroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // Gettimer
@@ -71,20 +74,50 @@
             Text1.TabIndex = 4;
             Text1.Text = "rss:        acs:";
             // 
-            // groupBox1
+            // KCS_GroupBox
             // 
-            groupBox1.Controls.Add(KCSGraph);
-            groupBox1.Controls.Add(MaxsView);
-            groupBox1.Controls.Add(KCSView_rss);
-            groupBox1.Controls.Add(Text0);
-            groupBox1.Controls.Add(Text1);
-            groupBox1.Controls.Add(KCSView_acs);
-            groupBox1.Location = new Point(534, 35);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(260, 304);
-            groupBox1.TabIndex = 5;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "KCS";
+            KCS_GroupBox.Controls.Add(KCSLevel_acsm);
+            KCS_GroupBox.Controls.Add(KCSLevel_acss);
+            KCS_GroupBox.Controls.Add(KCSLevel_rssm);
+            KCS_GroupBox.Controls.Add(KCSGraph);
+            KCS_GroupBox.Controls.Add(MaxsView);
+            KCS_GroupBox.Controls.Add(KCSView_rss);
+            KCS_GroupBox.Controls.Add(Text0);
+            KCS_GroupBox.Controls.Add(Text1);
+            KCS_GroupBox.Controls.Add(KCSView_acs);
+            KCS_GroupBox.Location = new Point(534, 35);
+            KCS_GroupBox.Name = "KCS_GroupBox";
+            KCS_GroupBox.Size = new Size(260, 304);
+            KCS_GroupBox.TabIndex = 5;
+            KCS_GroupBox.TabStop = false;
+            KCS_GroupBox.Text = "KCS";
+            // 
+            // KCSLevel_acsm
+            // 
+            KCSLevel_acsm.BackColor = Color.White;
+            KCSLevel_acsm.ForeColor = Color.White;
+            KCSLevel_acsm.Location = new Point(202, 56);
+            KCSLevel_acsm.Name = "KCSLevel_acsm";
+            KCSLevel_acsm.Size = new Size(40, 1);
+            KCSLevel_acsm.TabIndex = 14;
+            // 
+            // KCSLevel_acss
+            // 
+            KCSLevel_acss.BackColor = Color.White;
+            KCSLevel_acss.ForeColor = Color.White;
+            KCSLevel_acss.Location = new Point(141, 56);
+            KCSLevel_acss.Name = "KCSLevel_acss";
+            KCSLevel_acss.Size = new Size(50, 1);
+            KCSLevel_acss.TabIndex = 13;
+            // 
+            // KCSLevel_rssm
+            // 
+            KCSLevel_rssm.BackColor = Color.White;
+            KCSLevel_rssm.ForeColor = Color.White;
+            KCSLevel_rssm.Location = new Point(44, 56);
+            KCSLevel_rssm.Name = "KCSLevel_rssm";
+            KCSLevel_rssm.Size = new Size(40, 1);
+            KCSLevel_rssm.TabIndex = 12;
             // 
             // KCSGraph
             // 
@@ -135,7 +168,7 @@
             KCSView_acs.Name = "KCSView_acs";
             KCSView_acs.Size = new Size(242, 30);
             KCSView_acs.TabIndex = 5;
-            KCSView_acs.Text = "----/----";
+            KCSView_acs.Text = "----/ ----";
             KCSView_acs.TextAlign = ContentAlignment.TopRight;
             // 
             // VersionView
@@ -215,7 +248,7 @@
             Controls.Add(Text2);
             Controls.Add(MSView);
             Controls.Add(LogView);
-            Controls.Add(groupBox1);
+            Controls.Add(KCS_GroupBox);
             Controls.Add(MainImage);
             Font = new Font("Yu Gothic UI", 16F);
             ForeColor = Color.White;
@@ -225,8 +258,8 @@
             Text = "kmdv";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)MainImage).EndInit();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            KCS_GroupBox.ResumeLayout(false);
+            KCS_GroupBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -235,7 +268,7 @@
         private System.Windows.Forms.Timer Gettimer;
         private PictureBox MainImage;
         private Label Text1;
-        private GroupBox groupBox1;
+        private GroupBox KCS_GroupBox;
         private Label KCSView_acs;
         private Label Text2;
         private Label RAMview;
@@ -247,5 +280,8 @@
         private Label KCSView_rss;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart KCSGraph;
         private Label Text_loading;
+        private Label KCSLevel_rssm;
+        private Label KCSLevel_acss;
+        private Label KCSLevel_acsm;
     }
 }

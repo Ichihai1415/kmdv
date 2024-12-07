@@ -212,7 +212,7 @@ namespace kmdv
             g.Dispose();
 
             KCSView_rss.Text = ("\u200b" + ((int)(sindokcsMax * 100)).ToString()).Replace("\u200b0", "----");//\u200bはゼロ幅スペース　.Replace("\u200b", "")は不要
-            KCSView_acs.Text = ("​\u200b" + ((int)PGAkcsSum).ToString() + "/" + PGAkcsMax.ToString("0.00")).Replace("​\u200b​0/", "----/").Replace("/0.00", "/----");
+            KCSView_acs.Text = ("​\u200b" + ((int)PGAkcsSum).ToString() + "/" + PGAkcsMax.ToString("0.00")).Replace("​\u200b​0/", "----/").Replace("/0.00", "/ ----");
             RAMview.Text = (Environment.WorkingSet / 1048576d).ToString("0.0");
             MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 2000
                 ? (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms"
@@ -241,16 +241,21 @@ namespace kmdv
             }
             kcsLog.Append(getTime.ToString());
             kcsLog.Append(',');
-            kcsLog.Append(sindokcsMax);
+            kcsLog.Append(sindokcsMax.ToString("0.00"));
             kcsLog.Append(',');
-            kcsLog.Append(PGAkcsMax.ToString(".####"));
+            kcsLog.Append(PGAkcsMax.ToString("0.0000"));
             kcsLog.Append(',');
-            kcsLog.Append(PGAkcsSum.ToString(".##"));
+            kcsLog.Append(PGAkcsSum.ToString("0.00"));
             kcsLog.AppendLine();
             MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n" + kcsMaxsText;
 
             if (DateTime.Now - getTime > TimeSpan.FromSeconds(3))//取得遅延+処理時間
+            {
+                KCSLevel_rssm.BackColor = Color.White;
+                KCSLevel_acss.BackColor = Color.White;
+                KCSLevel_acsm.BackColor = Color.White;
                 return;//強モニ重くなって古いのが再生されないように
+            }
 
 
             GraphInsert_acss(PGAkcsSum);
@@ -278,21 +283,65 @@ namespace kmdv
             else if (sindokcsMax >= 0.35)
                 sindo = 1;
 
+            switch (sindo)
+            {
+                case 0:
+                case 1:
+                case 2:
+                    KCSLevel_rssm.BackColor = Color.White;
+                    break;
+                case 3:
+                case 4:
+                    KCSLevel_rssm.BackColor = Color.Yellow;
+                    break;
+                case 5:
+                case 6:
+                    KCSLevel_rssm.BackColor = Color.Red;
+                    break;
+                case 7:
+                case 8:
+                case 9:
+                    KCSLevel_rssm.BackColor = Color.FromArgb(200, 0, 200);
+                    break;
+            }
+
             if (sindo > 2 && sindo - latestSindo > 0)
                 PlaySound("s" + sindo + ".wav", false);
             else if (getTime.Second % 2 == 0)
                 if (PGAkcsSum >= 2500)
+                {
                     PlaySound("alarm35.wav", true);
+                    KCSLevel_acss.BackColor = Color.FromArgb(200, 0, 200);
+                }
                 else if (PGAkcsSum >= 1500)
+                {
                     PlaySound("alarm25.wav", true);
+                    KCSLevel_acss.BackColor = Color.Red;
+                }
                 else if (PGAkcsSum >= 800)
+                {
                     PlaySound("alarm15.wav", true);
-                else { }
-            else
-                if (PGAkcsMax >= 0.8)//0.8で100 0.6で10 0.66でだいたい20 (log10(x)+2)/5
+                    KCSLevel_acss.BackColor = Color.Yellow;
+                }
+                else
+                    KCSLevel_acss.BackColor = Color.White;
+            if (PGAkcsMax >= 0.8)//0.8で100 0.6で10 0.66でだいたい20 (log10(x)+2)/5
+            {
                 PlaySound("pga100+.wav", true);
+                if (PGAkcsMax >= 0.9)
+                    KCSLevel_acsm.BackColor = Color.FromArgb(200, 0, 200);
+                else
+                    KCSLevel_acsm.BackColor = Color.Red;
+
+            }
             else if (PGAkcsMax >= 0.66)
+            {
                 PlaySound("pga20+.wav", true);
+                KCSLevel_acsm.BackColor = Color.Yellow;
+            }
+            else
+                KCSLevel_acsm.BackColor = Color.White;
+
             if (sindo != 0)
                 latestSindo = sindo;
             if (getTime.Second == 0)
