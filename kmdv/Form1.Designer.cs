@@ -43,6 +43,7 @@
             RAMview = new Label();
             LogView = new TextBox();
             MSView = new Label();
+            Text_loading = new Label();
             ((System.ComponentModel.ISupportInitialize)MainImage).BeginInit();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -98,7 +99,7 @@
             MaxsView.AcceptsReturn = true;
             MaxsView.BackColor = Color.FromArgb(30, 60, 90);
             MaxsView.BorderStyle = BorderStyle.FixedSingle;
-            MaxsView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            MaxsView.Font = new Font("Yu Gothic UI", 10F);
             MaxsView.ForeColor = Color.White;
             MaxsView.Location = new Point(6, 198);
             MaxsView.Multiline = true;
@@ -121,7 +122,7 @@
             // Text0
             // 
             Text0.AutoSize = true;
-            Text0.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            Text0.Font = new Font("Yu Gothic UI", 14F);
             Text0.Location = new Point(9, 2);
             Text0.Name = "Text0";
             Text0.Size = new Size(71, 25);
@@ -140,7 +141,7 @@
             // VersionView
             // 
             VersionView.AutoSize = true;
-            VersionView.Font = new Font("Yu Gothic UI", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            VersionView.Font = new Font("Yu Gothic UI", 8F);
             VersionView.Location = new Point(738, 0);
             VersionView.Name = "VersionView";
             VersionView.Size = new Size(62, 13);
@@ -150,7 +151,7 @@
             // Text2
             // 
             Text2.AutoSize = true;
-            Text2.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            Text2.Font = new Font("Yu Gothic UI", 14F);
             Text2.Location = new Point(528, 10);
             Text2.Name = "Text2";
             Text2.Size = new Size(193, 25);
@@ -159,7 +160,7 @@
             // 
             // RAMview
             // 
-            RAMview.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            RAMview.Font = new Font("Yu Gothic UI", 14F);
             RAMview.Location = new Point(571, 10);
             RAMview.Name = "RAMview";
             RAMview.Size = new Size(66, 25);
@@ -172,7 +173,7 @@
             LogView.AcceptsReturn = true;
             LogView.BackColor = Color.FromArgb(30, 60, 90);
             LogView.BorderStyle = BorderStyle.FixedSingle;
-            LogView.Font = new Font("Yu Gothic UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            LogView.Font = new Font("Yu Gothic UI", 10F);
             LogView.ForeColor = Color.White;
             LogView.Location = new Point(534, 344);
             LogView.Multiline = true;
@@ -185,7 +186,7 @@
             // 
             // MSView
             // 
-            MSView.Font = new Font("Yu Gothic UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            MSView.Font = new Font("Yu Gothic UI", 14F);
             MSView.Location = new Point(662, 10);
             MSView.Name = "MSView";
             MSView.Size = new Size(138, 25);
@@ -193,11 +194,22 @@
             MSView.Text = "------ms";
             MSView.TextAlign = ContentAlignment.TopRight;
             // 
+            // Text_loading
+            // 
+            Text_loading.Font = new Font("Yu Gothic UI", 11F);
+            Text_loading.ForeColor = Color.Yellow;
+            Text_loading.Location = new Point(528, -3);
+            Text_loading.Name = "Text_loading";
+            Text_loading.Size = new Size(20, 20);
+            Text_loading.TabIndex = 10;
+            Text_loading.Text = "↻";
+            // 
             // Form1
             // 
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(30, 60, 90);
             ClientSize = new Size(800, 400);
+            Controls.Add(Text_loading);
             Controls.Add(VersionView);
             Controls.Add(RAMview);
             Controls.Add(Text2);
@@ -205,7 +217,7 @@
             Controls.Add(LogView);
             Controls.Add(groupBox1);
             Controls.Add(MainImage);
-            Font = new Font("Yu Gothic UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Yu Gothic UI", 16F);
             ForeColor = Color.White;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
@@ -234,5 +246,6 @@
         private TextBox MaxsView;
         private Label KCSView_rss;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart KCSGraph;
+        private Label Text_loading;
     }
 }

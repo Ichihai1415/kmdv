@@ -1,4 +1,4 @@
-using kmdv.Properties;
+ï»¿using kmdv.Properties;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Media;
 using System.Net;
+using System.Text;
 using static kmdv.Converter;
 
 namespace kmdv
@@ -17,24 +18,28 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.4.8";
-            LogView.Text = $"start:{DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+            VersionView.Text = "kmdv v0.5.0";
+            LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
+            kcsMaxs[0] = Math.Floor(DateTime.Now.Minute / 10d);
+            client.Timeout = TimeSpan.FromSeconds(10);
         }
 
-        public static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>());
-        public readonly static HttpClient client = new();
-        public readonly static int getDelay = 1500;
-        public static double[] kcsMaxs = [9, 0, 0, 0];//ÅŒã‚Ì•ª/10(Ø‚èÌ‚Ä),rssm,acsm,acss
-        public static string kcsMaxsText = "";
-        public readonly static int GraphValueCount = 60;
-        public static ObservableCollection<ObservableValue> GraphValue_acss = [];
-        public static ObservableCollection<ObservableValue> GraphValue_acsm = [];
-        public static ObservableCollection<ObservableValue> GraphValue_rssm = [];
-        public static SoundPlayer? player_ac;
-        public static SoundPlayer? player_rs;
-        public static int latestSindo = 0;
+        internal static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>());
+        internal readonly static HttpClient client = new();
+        internal readonly static int getDelay = 1500;
+        internal static double[] kcsMaxs = [9, 0, 0, 0];//æœ€å¾Œã®åˆ†/10(åˆ‡ã‚Šæ¨ã¦),rssm,acsm,acss
+        internal static string kcsMaxsText = "";
+        internal readonly static int GraphValueCount = 60;
+        internal static ObservableCollection<ObservableValue> GraphValue_acss = [];
+        internal static ObservableCollection<ObservableValue> GraphValue_acsm = [];
+        internal static ObservableCollection<ObservableValue> GraphValue_rssm = [];
+        internal static SoundPlayer? player_ac;
+        internal static SoundPlayer? player_rs;
+        internal static int latestSindo = 0;
+        internal static StringBuilder kcsLog = new();
+        public const string LOG_FOLDER = @"D:\Logs\kmdv";
 
         private async void Form1_Load(object sender, EventArgs e)
         {
@@ -71,9 +76,9 @@ namespace kmdv
             //setup
             KCSGraph.DrawMargin = new Margin(10);
             KCSGraph.Tooltip = null;
-            KCSGraph.XAxes = new Axis[]
-            {
-                new() {
+            KCSGraph.XAxes =
+            [
+                new Axis() {
                     Name = "time(60s)",
                     NamePaint = new SolidColorPaint(SKColors.White),
                     NameTextSize = 12,
@@ -82,10 +87,10 @@ namespace kmdv
 
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 }
                 }
-            };
-            KCSGraph.YAxes = new Axis[]
-            {
-                new() {
+            ];
+            KCSGraph.YAxes =
+            [
+                new Axis() {
                     Name = "kcs (ac-s sum)",
                     NamePaint = new SolidColorPaint(SKColors.Red),
                     NameTextSize = 12,
@@ -96,7 +101,7 @@ namespace kmdv
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 1 },
                     MinLimit = 0
                 },
-                new() {
+                new Axis() {
                     Name = "kcs (ac-s max)",
                     NamePaint = new SolidColorPaint(SKColors.Yellow),
                     NameTextSize = 10,
@@ -109,7 +114,7 @@ namespace kmdv
                     MaxLimit = 1,
                     MinLimit = 0
                 },
-                new() {
+                new Axis() {
                     Name = "kcs (rs-s max)",
                     NamePaint = new SolidColorPaint(SKColors.LightGreen),
                     NameTextSize = 10,
@@ -122,13 +127,13 @@ namespace kmdv
                     MinLimit = 0,
                     Position = AxisPosition.End
                 }
-            };
+            ];
             KCSGraph.Series =
             [
                 new LineSeries<ObservableValue?>
                 {
 
-                    Values = GraphValue_acss,
+                    Values = GraphValue_acss!,
                     Stroke = new SolidColorPaint(SKColors.Red, 2),
                     GeometrySize = 0,
                     Fill = null,
@@ -138,7 +143,7 @@ namespace kmdv
                 new LineSeries<ObservableValue?>
                 {
 
-                    Values = GraphValue_acsm,
+                    Values = GraphValue_acsm!,
                     Stroke = new SolidColorPaint(SKColors.Yellow, 1),
                     GeometrySize = 0,
                     Fill = null,
@@ -148,7 +153,7 @@ namespace kmdv
                 new LineSeries<ObservableValue?>
                 {
 
-                    Values = GraphValue_rssm,
+                    Values = GraphValue_rssm!,
                     Stroke = new SolidColorPaint(SKColors.LightGreen, 1),
                     GeometrySize = 0,
                     Fill = null,
@@ -170,7 +175,7 @@ namespace kmdv
 
         private async void Gettimer_Tick(object sender, EventArgs e)
         {
-
+            Text_loading.Size = new Size(20, 20);
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             DateTime getTime = DateTime.Now.AddSeconds(-1);
 
@@ -178,7 +183,9 @@ namespace kmdv
             Task<Bitmap> SindoTask = Task.Run(() => GetKyoshin(KyoshinImage.Sindo_Sur, getTime));
             Task<Bitmap> ChoTask = Task.Run(() => GetKyoshin(KyoshinImage.Cho_Kai, getTime));
             Task<Bitmap> PGDTask = Task.Run(() => GetKyoshin(KyoshinImage.PGD_Sur, getTime));
+
             await Task.WhenAll(PGATask, SindoTask, ChoTask, PGDTask);
+            Text_loading.Size = new Size(0, 0);
 
             Bitmap PGAImg = PGATask.Result;
             Bitmap SindoImg = SindoTask.Result;
@@ -204,14 +211,12 @@ namespace kmdv
             MainImage.Image = mainImg;
             g.Dispose();
 
-            GraphInsert_acss(PGAkcsSum);
-            GraphInsert_acsm(PGAkcsMax);
-            GraphInsert_rssm(sindokcsMax);
-
-            KCSView_rss.Text = $"*{sindokcsMax * 100:0}".Replace("*0", "----").Replace("*", "");
-            KCSView_acs.Text = $"*{PGAkcsSum:0}/{PGAkcsMax:0.00}".Replace("*0/", "----/").Replace("/0.00", "/----").Replace("*", "");
-            RAMview.Text = $"{Environment.WorkingSet / 1048576d:0.0}";
-            MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 2000 ? $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0}ms" : $"{(DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds:0.0}ms";
+            KCSView_rss.Text = ("\u200b" + ((int)(sindokcsMax * 100)).ToString()).Replace("\u200b0", "----");//\u200bã¯ã‚¼ãƒ­å¹…ã‚¹ãƒšãƒ¼ã‚¹ã€€.Replace("\u200b", "")ã¯ä¸è¦
+            KCSView_acs.Text = ("â€‹\u200b" + ((int)PGAkcsSum).ToString() + "/" + PGAkcsMax.ToString("0.00")).Replace("â€‹\u200bâ€‹0/", "----/").Replace("/0.00", "/----");
+            RAMview.Text = (Environment.WorkingSet / 1048576d).ToString("0.0");
+            MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 2000
+                ? (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms"
+                : (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms";
 
             double min_10 = Math.Floor(getTime.Minute / 10d);
             if (min_10 == kcsMaxs[0])
@@ -220,18 +225,39 @@ namespace kmdv
                 kcsMaxs[2] = Math.Max(kcsMaxs[2], PGAkcsMax);
                 kcsMaxs[3] = Math.Max(kcsMaxs[3], PGAkcsSum);
             }
-            else//10•ª‚²‚Æ‚ÉXV
+            else//10åˆ†ã”ã¨ã«æ›´æ–°
             {
+                Directory.CreateDirectory(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM"));
+                Directory.CreateDirectory(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM\\\\dd"));
+                File.WriteAllText(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM\\\\dd\\\\HH-mm") + ".csv", kcsLog.ToString());
+                kcsLog = new StringBuilder("dateTime,rssm,acsm,acss\n");
+
                 kcsMaxsText = MaxsView.Text;
                 kcsMaxs[0] = min_10;
                 kcsMaxs[1] = sindokcsMax;
                 kcsMaxs[2] = PGAkcsMax;
                 kcsMaxs[3] = PGAkcsSum;
-            }
-            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n{kcsMaxsText}";
 
-            if (DateTime.Now - getTime > TimeSpan.FromSeconds(3))//æ“¾’x‰„+ˆ—ŠÔ
-                return;//‹­ƒ‚ƒjd‚­‚È‚Á‚ÄŒÃ‚¢‚Ì‚ªÄ¶‚³‚ê‚È‚¢‚æ‚¤‚É
+            }
+            kcsLog.Append(getTime.ToString());
+            kcsLog.Append(',');
+            kcsLog.Append(sindokcsMax);
+            kcsLog.Append(',');
+            kcsLog.Append(PGAkcsMax.ToString(".####"));
+            kcsLog.Append(',');
+            kcsLog.Append(PGAkcsSum.ToString(".##"));
+            kcsLog.AppendLine();
+            MaxsView.Text = $"{getTime:HH}:{kcsMaxs[0]}0~ rssm:{kcsMaxs[1]:.00} acsm:{kcsMaxs[2]:.000} acss:{kcsMaxs[3]:0}\r\n" + kcsMaxsText;
+
+            if (DateTime.Now - getTime > TimeSpan.FromSeconds(3))//å–å¾—é…å»¶+å‡¦ç†æ™‚é–“
+                return;//å¼·ãƒ¢ãƒ‹é‡ããªã£ã¦å¤ã„ã®ãŒå†ç”Ÿã•ã‚Œãªã„ã‚ˆã†ã«
+
+
+            GraphInsert_acss(PGAkcsSum);
+            GraphInsert_acsm(PGAkcsMax);
+            GraphInsert_rssm(sindokcsMax);
+
+
             int sindo = 0;
             if (sindokcsMax >= 0.95)
                 sindo = 9;
@@ -253,7 +279,7 @@ namespace kmdv
                 sindo = 1;
 
             if (sindo > 2 && sindo - latestSindo > 0)
-                PlaySound($"s{sindo}.wav", false);
+                PlaySound("s" + sindo + ".wav", false);
             else if (getTime.Second % 2 == 0)
                 if (PGAkcsSum >= 2500)
                     PlaySound("alarm35.wav", true);
@@ -263,27 +289,29 @@ namespace kmdv
                     PlaySound("alarm15.wav", true);
                 else { }
             else
-                if (PGAkcsMax >= 0.8)//0.8‚Å100 0.6‚Å10 0.66‚Å‚¾‚¢‚½‚¢20 (log10(x)+2)/5
+                if (PGAkcsMax >= 0.8)//0.8ã§100 0.6ã§10 0.66ã§ã ã„ãŸã„20 (log10(x)+2)/5
                 PlaySound("pga100+.wav", true);
             else if (PGAkcsMax >= 0.66)
                 PlaySound("pga20+.wav", true);
             if (sindo != 0)
                 latestSindo = sindo;
+            if (getTime.Second == 0)
+                GC.Collect();
         }
 
         /// <summary>
-        /// ‹­kƒ‚ƒjƒ^‚Ì‰æ‘œ‚ğæ“¾‚µ‚Ü‚·B
+        /// å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã®ç”»åƒã‚’å–å¾—ã—ã¾ã™ã€‚
         /// </summary>
         /// <param name="type"></param>
         /// <param name="time"></param>
-        /// <returns>‹­kƒ‚ƒjƒ^‚Ì‰æ‘œB¸”s‚ÍBitmap(1, 1)B</returns>
+        /// <returns>å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã®ç”»åƒã€‚å¤±æ•—æ™‚ã¯Bitmap(1, 1)ã€‚</returns>
         public static async Task<Bitmap> GetKyoshin(KyoshinImage type, DateTime time)
         {
             try
             {
                 HttpResponseMessage res = await client.GetAsync(KyoshinURL[type].Replace("{time}", time.ToString("yyyyMMdd/yyyyMMddHHmmss")));
                 if (res.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"æ“¾¸”s({res.StatusCode})");
+                    throw new Exception("å–å¾—å¤±æ•—(" + res.StatusCode + ")");
                 return new Bitmap(res.Content.ReadAsStream());
             }
             catch (Exception ex)
@@ -294,15 +322,15 @@ namespace kmdv
         }
 
         /// <summary>
-        /// ‰æ‘œ‚©‚ç‹­kƒ‚ƒjƒ^ƒJƒ‰[ƒXƒP[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
+        /// ç”»åƒã‹ã‚‰å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã‚«ãƒ©ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
         /// </summary>
-        /// <param name="image">‹­kƒ‚ƒjƒ^‚Ì‰æ‘œB</param>
-        /// <returns>[0]:kcs‚Ì‡Œv [1]:kcs‚ÌÅ‘å</returns>
+        /// <param name="image">å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã®ç”»åƒã€‚</param>
+        /// <returns>[0]:kcsã®åˆè¨ˆ [1]:kcsã®æœ€å¤§</returns>
         public double[] Image2kcs(Bitmap image)
         {
             try
             {
-                Debug.WriteLine($"image2kcs");
+                Debug.WriteLine("image2kcs");
                 if (image.Width != 352 || image.Height != 400)
                     return [0, 0];
                 double kcsSum = 0;
@@ -320,7 +348,7 @@ namespace kmdv
                         else
                         {
                             kcs = Color2KCS(colors);
-                            RGB2kcs[colors] = kcs;//Add‚¾‚Æ”»’èö‚è”²‚¯‚Äd•¡ƒGƒ‰[‚É‚È‚é‚±‚Æ‚ª‚ ‚é
+                            RGB2kcs[colors] = kcs;//Addã ã¨åˆ¤å®šæ½œã‚ŠæŠœã‘ã¦é‡è¤‡ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹ã“ã¨ãŒã‚ã‚‹
                         }
                         kcsMax = Math.Max(kcsMax, kcs);
                         kcsSum += kcs;
@@ -328,25 +356,25 @@ namespace kmdv
                 return [kcsSum, kcsMax];
 
             }
-            catch (Exception ex)//ŠJn‚É—áŠO‚ª‹N‚±‚é‚±‚Æ‚ª‚ ‚é(‹N“®’¼Œã‚Ì‚İ?)
+            catch (Exception ex)//é–‹å§‹æ™‚ã«ä¾‹å¤–ãŒèµ·ã“ã‚‹ã“ã¨ãŒã‚ã‚‹(èµ·å‹•ç›´å¾Œã®ã¿?)
             {
                 Debug.WriteLine(ex.Message);
-                LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcs>\r\n{ex}\r\n{LogView.Text}";
+                LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcs>\r\n{ex}\r\n" + LogView.Text;
                 return [0, 0];
             }
         }
 
         /// <summary>
-        /// ‰æ‘œ‚©‚ç‹­kƒ‚ƒjƒ^ƒJƒ‰[ƒXƒP[ƒ‹‚Ì‹­kk“x‚ğæ“¾‚µ‚Ü‚·B
+        /// ç”»åƒã‹ã‚‰å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã‚«ãƒ©ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã®å¼·éœ‡éœ‡åº¦ã‚’å–å¾—ã—ã¾ã™ã€‚
         /// </summary>
-        /// <remarks>ƒe[ƒuƒ‹æ“¾®‚Å‚·BƒJƒ‰[ƒXƒP[ƒ‹ŒvZ‚æ‚è³Šm‚Æv‚í‚ê‚Ü‚·B</remarks>
-        /// <param name="image">‹­kƒ‚ƒjƒ^‚Ì‰æ‘œB</param>
-        /// <returns>kcs‚ÌÅ‘å</returns>
+        /// <remarks>ãƒ†ãƒ¼ãƒ–ãƒ«å–å¾—å¼ã§ã™ã€‚ã‚«ãƒ©ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«è¨ˆç®—ã‚ˆã‚Šæ­£ç¢ºã¨æ€ã‚ã‚Œã¾ã™ã€‚</remarks>
+        /// <param name="image">å¼·éœ‡ãƒ¢ãƒ‹ã‚¿ã®ç”»åƒã€‚</param>
+        /// <returns>kcsã®æœ€å¤§</returns>
         public double Image2kcsSindo(Bitmap image)
         {
             try
             {
-                Debug.WriteLine($"image2kcs");
+                Debug.WriteLine("image2kcs");
                 if (image.Width != 352 || image.Height != 400)
                     return 0;
                 double kcsSum = 0;
@@ -368,15 +396,15 @@ namespace kmdv
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcsSindo>\r\n{ex}\r\n{LogView.Text}";
+                LogView.Text = $"-----{DateTime.Now:MM/dd HH:mm:ss} <Image2kcsSindo>\r\n{ex}\r\n" + LogView.Text;
                 return 0;
             }
         }
 
         /// <summary>
-        /// acssƒOƒ‰ƒt—pƒf[ƒ^”z—ñ‚É’l‚ğ‘}“ü‚µ‚Ü‚·B
+        /// acssã‚°ãƒ©ãƒ•ç”¨ãƒ‡ãƒ¼ã‚¿é…åˆ—ã«å€¤ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
         /// </summary>
-        /// <param name="value">‘}“ü‚·‚é’lB0‚Ìê‡null‚Æ‚È‚è‚Ü‚·B</param>
+        /// <param name="value">æŒ¿å…¥ã™ã‚‹å€¤ã€‚0ã®å ´åˆnullã¨ãªã‚Šã¾ã™ã€‚</param>
         public static void GraphInsert_acss(double value)
         {
             for (int i = 0; i < GraphValueCount - 1; i++)
@@ -385,9 +413,9 @@ namespace kmdv
         }
 
         /// <summary>
-        /// acsmƒOƒ‰ƒt—pƒf[ƒ^”z—ñ‚É’l‚ğ‘}“ü‚µ‚Ü‚·B
+        /// acsmã‚°ãƒ©ãƒ•ç”¨ãƒ‡ãƒ¼ã‚¿é…åˆ—ã«å€¤ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
         /// </summary>
-        /// <param name="value">‘}“ü‚·‚é’lB0‚Ìê‡null‚Æ‚È‚è‚Ü‚·B</param>
+        /// <param name="value">æŒ¿å…¥ã™ã‚‹å€¤ã€‚0ã®å ´åˆnullã¨ãªã‚Šã¾ã™ã€‚</param>
         public static void GraphInsert_acsm(double value)
         {
             for (int i = 0; i < GraphValueCount - 1; i++)
@@ -396,9 +424,9 @@ namespace kmdv
         }
 
         /// <summary>
-        /// rssmƒOƒ‰ƒt—pƒf[ƒ^”z—ñ‚É’l‚ğ‘}“ü‚µ‚Ü‚·B
+        /// rssmã‚°ãƒ©ãƒ•ç”¨ãƒ‡ãƒ¼ã‚¿é…åˆ—ã«å€¤ã‚’æŒ¿å…¥ã—ã¾ã™ã€‚
         /// </summary>
-        /// <param name="value">‘}“ü‚·‚é’lB0‚Ìê‡null‚Æ‚È‚è‚Ü‚·B</param>
+        /// <param name="value">æŒ¿å…¥ã™ã‚‹å€¤ã€‚0ã®å ´åˆnullã¨ãªã‚Šã¾ã™ã€‚</param>
         public static void GraphInsert_rssm(double value)
         {
             for (int i = 0; i < GraphValueCount - 1; i++)
@@ -407,11 +435,11 @@ namespace kmdv
         }
 
         /// <summary>
-        /// ‰¹º‚ğÄ¶‚µ‚Ü‚·B
+        /// éŸ³å£°ã‚’å†ç”Ÿã—ã¾ã™ã€‚
         /// </summary>
-        /// <remarks>‰¹º‚Í©“®‚ÅƒRƒs[‚³‚ê‚Ü‚·B</remarks>
-        /// <param name="fileName">Ä¶‚·‚éƒtƒ@ƒCƒ‹–¼(sound\\)</param>
-        /// <param name="isAC">kcs(acs-s/m)‚Ìê‡True</param>
+        /// <remarks>éŸ³å£°ã¯è‡ªå‹•ã§ã‚³ãƒ”ãƒ¼ã•ã‚Œã¾ã™ã€‚</remarks>
+        /// <param name="fileName">å†ç”Ÿã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å(sound\\)</param>
+        /// <param name="isAC">kcs(acs-s/m)ã®å ´åˆTrue</param>
         public static void PlaySound(string fileName, bool isAC)
         {
             if (!Directory.Exists("sound"))
@@ -449,7 +477,7 @@ namespace kmdv
                     player_ac.Dispose();
                     player_ac = null;
                 }
-                player_ac = new SoundPlayer($"sound\\{fileName}");
+                player_ac = new SoundPlayer("sound\\" + fileName);
                 player_ac.Play();
             }
             else
@@ -460,7 +488,7 @@ namespace kmdv
                     player_rs.Dispose();
                     player_rs = null;
                 }
-                player_rs = new SoundPlayer($"sound\\{fileName}");
+                player_rs = new SoundPlayer("sound\\" + fileName);
                 player_rs.Play();
             }
         }
