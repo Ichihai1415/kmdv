@@ -227,9 +227,10 @@ namespace kmdv
             }
             else//10分ごとに更新
             {
-                Directory.CreateDirectory(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM"));
-                Directory.CreateDirectory(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM\\\\dd"));
-                File.WriteAllText(LOG_FOLDER + "\\" + getTime.ToString("yyyyMM\\\\dd\\\\HH-mm") + ".csv", kcsLog.ToString());
+                var saveTime = getTime.AddMinutes(-10);
+                Directory.CreateDirectory(LOG_FOLDER + "\\" + saveTime.ToString("yyyyMM"));
+                Directory.CreateDirectory(LOG_FOLDER + "\\" + saveTime.ToString("yyyyMM\\\\dd"));
+                File.WriteAllText(LOG_FOLDER + "\\" + saveTime.ToString("yyyyMM\\\\dd\\\\HH-mm") + ".csv", kcsLog.ToString());
                 kcsLog = new StringBuilder("dateTime,rssm,acsm,acss\n");
 
                 kcsMaxsText = MaxsView.Text;
