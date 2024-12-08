@@ -331,12 +331,11 @@ namespace kmdv
                     PlaySound("pga100+.wav", true);
                 else if (PGAkcsMax >= 0.66)
                     PlaySound("pga20+.wav", true);
-            if (PGAkcsMax >= 0.8)//0.8で100 0.6で10 0.66でだいたい20 (log10(x)+2)/5
-                if (PGAkcsMax >= 0.9)
-                    KCSLevel_acsm.BackColor = Color.FromArgb(200, 0, 200);
-                else
-                    KCSLevel_acsm.BackColor = Color.Red;
-            else if (PGAkcsMax >= 0.66)
+            if (PGAkcsMax >= 0.9)//316.2777
+                KCSLevel_acsm.BackColor = Color.FromArgb(200, 0, 200);
+            else if (PGAkcsMax >= 0.8)
+                KCSLevel_acsm.BackColor = Color.Red;
+            else if (PGAkcsMax >= 0.6)
                 KCSLevel_acsm.BackColor = Color.Yellow;
             else
                 KCSLevel_acsm.BackColor = Color.White;
