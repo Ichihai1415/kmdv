@@ -240,7 +240,7 @@ namespace kmdv
                 kcsMaxs[3] = PGAkcsSum;
 
             }
-            kcsLog.Append(getTime.ToString());
+            kcsLog.Append(getTime.ToString("yyyy/MM/dd HH:mm:ss"));
             kcsLog.Append(',');
             kcsLog.Append(sindokcsMax.ToString("0.00"));
             kcsLog.Append(',');
