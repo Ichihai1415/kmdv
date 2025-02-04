@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.0";
+            VersionView.Text = "kmdv v0.5.1";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -314,12 +314,12 @@ namespace kmdv
                     PlaySound("alarm35.wav", true);
                     KCSLevel_acss.BackColor = Color.FromArgb(200, 0, 200);
                 }
-                else if (PGAkcsSum >= 1500)
+                else if (PGAkcsSum >= 1800)
                 {
                     PlaySound("alarm25.wav", true);
                     KCSLevel_acss.BackColor = Color.Red;
                 }
-                else if (PGAkcsSum >= 800)
+                else if (PGAkcsSum >= 1000)
                 {
                     PlaySound("alarm15.wav", true);
                     KCSLevel_acss.BackColor = Color.Yellow;

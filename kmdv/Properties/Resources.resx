@@ -131,10 +131,10 @@
     <value>..\Resources\backmap.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pga100_wav" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\x64\Debug\net8.0-windows7.0\sound\pga100+wav;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\pga100+wav;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="pga20_wav" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\x64\Debug\net8.0-windows7.0\sound\pga20+wav;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\pga20+wav;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="s3wav" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\s3wav;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
