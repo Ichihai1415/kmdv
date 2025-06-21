@@ -134,7 +134,7 @@ namespace kmdv
         /// <remarks>データ:https://github.com/ingen084/KyoshinShindoColorMap</remarks>
         public readonly static Dictionary<int[], double> RGB2Sindo = new(new ArrayEqualityComparer<int>())
         {
-            { new int[] {0, 0, 0}, -5.0},
+            { new int[] {0, 0, 0}, -9.9},
             { new int[] {0, 0, 205}, -3.0},
             { new int[] {0, 7, 209}, -2.9},
             { new int[] {0, 14, 214}, -2.8},

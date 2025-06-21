@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.1";
+            VersionView.Text = "kmdv v0.5.2";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -40,6 +40,14 @@ namespace kmdv
         internal static int latestSindo = 0;
         internal static StringBuilder kcsLog = new();
         public const string LOG_FOLDER = @"D:\Logs\kmdv";
+        internal TokaraShakeChecker tokaraShakeChecker = new();
+        public readonly static Point[] TokaraPoints =
+        [
+            new(39, 393),//屋久島
+            new(146,88),//笠利
+            new(140, 90),//大和
+            new(138, 96),//瀬戸内
+        ];
 
         private async void Form1_Load(object sender, EventArgs e)
         {
@@ -169,6 +177,8 @@ namespace kmdv
                 await Task.Delay(10);
             }
 
+            tokaraShakeChecker.Show();
+
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             Gettimer.Enabled = true;//start
         }
@@ -213,7 +223,7 @@ namespace kmdv
 
             KCSView_rss.Text = ("\u200b" + ((int)(sindokcsMax * 100)).ToString()).Replace("\u200b0", "----");//\u200bはゼロ幅スペース　.Replace("\u200b", "")は不要
             KCSView_acs.Text = ("​\u200b" + ((int)PGAkcsSum).ToString() + "/" + PGAkcsMax.ToString("0.00")).Replace("​\u200b​0/", "----/").Replace("/0.00", "/ ----");
-            RAMview.Text = (Environment.WorkingSet / 1048576d).ToString("0.0");
+            RAMview.Text = (GC.GetTotalMemory(false) / 1048576d).ToString("0.0");
             MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 2000
                 ? (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms"
                 : (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms";
@@ -258,6 +268,22 @@ namespace kmdv
                 return;//強モニ重くなって古いのが再生されないように
             }
 
+            if (SindoImg.Width == 352)
+                for (int i = 0; i < 4; i++)
+                {
+                    Color color = SindoImg.GetPixel(TokaraPoints[i].X, TokaraPoints[i].Y);
+                    int[] colors = [color.R, color.G, color.B];
+                    var value = (int)((RGB2Sindo[colors] + 3) * 10);
+                    tokaraShakeChecker.value[i] = value;
+                    tokaraShakeChecker.color[i] = color;
+                }
+            else
+                for (int i = 0; i < 4; i++)
+                {
+                    tokaraShakeChecker.value[i] = -69;
+                    tokaraShakeChecker.color[i] = Color.FromArgb(30, 60, 90);
+                }
+            tokaraShakeChecker.SetValues();
 
             GraphInsert_acss(PGAkcsSum);
             GraphInsert_acsm(PGAkcsMax);
@@ -486,34 +512,27 @@ namespace kmdv
         /// </summary>
         /// <remarks>音声は自動でコピーされます。</remarks>
         /// <param name="fileName">再生するファイル名(sound\\)</param>
-        /// <param name="isAC">kcs(acs-s/m)の場合True</param>
+        /// <param name="isAC">kcs(acs-s/m)の場合True,rsmの場合False その他は基本True</param>
         public static void PlaySound(string fileName, bool isAC)
         {
             if (!Directory.Exists("sound"))
             {
                 Directory.CreateDirectory("sound");
 
-                if (!File.Exists("sound\\alarm15.wav"))
-                    File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
-                if (!File.Exists("sound\\alarm25.wav"))
-                    File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
-                if (!File.Exists("sound\\alarm35.wav"))
-                    File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
+                File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
+                File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
+                File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
 
-                if (!File.Exists("sound\\s3.wav"))
-                    File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
-                if (!File.Exists("sound\\s4.wav"))
-                    File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
-                if (!File.Exists("sound\\s5.wav"))
-                    File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
-                if (!File.Exists("sound\\s6.wav"))
-                    File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
-                if (!File.Exists("sound\\s7.wav"))
-                    File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
-                if (!File.Exists("sound\\s8.wav"))
-                    File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
-                if (!File.Exists("sound\\s9.wav"))
-                    File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+                File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
+                File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
+                File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
+                File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
+                File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
+                File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
+                File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
+
+                File.WriteAllBytes("sound\\tokara1.wav", Resources.tokara1wav);
+                File.WriteAllBytes("sound\\tokara2.wav", Resources.tokara2wav);
             }
 
             if (isAC)

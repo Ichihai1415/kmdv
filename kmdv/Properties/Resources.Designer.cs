@@ -189,5 +189,25 @@ namespace kmdv.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] tokara1wav {
+            get {
+                object obj = ResourceManager.GetObject("tokara1wav", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Byte[] のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static byte[] tokara2wav {
+            get {
+                object obj = ResourceManager.GetObject("tokara2wav", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
