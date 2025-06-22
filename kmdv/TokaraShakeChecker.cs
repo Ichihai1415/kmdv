@@ -29,7 +29,7 @@
             for (int i = 0; i < 4; i++)
                 lastValue[i] = value[i];
 
-            L_value.Text = (value[0] + flag0 + "\n\n" + value[1] + flag1 + "\n" + value[2] + flag2 + "\n" + value[3] + flag3).Replace("↓-69", "- - -");
+            L_value.Text = (value[0] + flag0 + "\n\n" + value[1] + flag1 + "\n" + value[2] + flag2 + "\n" + value[3] + flag3).Replace("-69↓", "- - -").Replace("-69→", "- - -");
             L_color0.BackColor = color[0];
             L_color1.BackColor = color[1];
             L_color2.BackColor = color[2];
