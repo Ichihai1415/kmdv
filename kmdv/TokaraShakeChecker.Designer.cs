@@ -50,18 +50,18 @@
             // L_value
             // 
             L_value.Font = new Font("Yu Gothic UI", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 128);
-            L_value.Location = new Point(105, 60);
+            L_value.Location = new Point(110, 60);
             L_value.Name = "L_value";
-            L_value.Size = new Size(50, 150);
+            L_value.Size = new Size(58, 150);
             L_value.TabIndex = 1;
-            L_value.Text = "---\r\n\r\n---\r\n---\r\n---";
+            L_value.Text = "- - -\r\n\r\n- - -\r\n- - -\r\n- - -";
             L_value.TextAlign = ContentAlignment.TopRight;
             // 
             // L_color0
             // 
             L_color0.BackColor = Color.FromArgb(30, 60, 90);
             L_color0.ForeColor = SystemColors.ControlLightLight;
-            L_color0.Location = new Point(105, 85);
+            L_color0.Location = new Point(110, 85);
             L_color0.Name = "L_color0";
             L_color0.Size = new Size(50, 5);
             L_color0.TabIndex = 2;
@@ -70,7 +70,7 @@
             // 
             L_color1.BackColor = Color.FromArgb(30, 60, 90);
             L_color1.ForeColor = SystemColors.ControlLightLight;
-            L_color1.Location = new Point(105, 145);
+            L_color1.Location = new Point(110, 145);
             L_color1.Name = "L_color1";
             L_color1.Size = new Size(50, 5);
             L_color1.TabIndex = 3;
@@ -79,7 +79,7 @@
             // 
             L_color2.BackColor = Color.FromArgb(30, 60, 90);
             L_color2.ForeColor = SystemColors.ControlLightLight;
-            L_color2.Location = new Point(105, 175);
+            L_color2.Location = new Point(110, 175);
             L_color2.Name = "L_color2";
             L_color2.Size = new Size(50, 5);
             L_color2.TabIndex = 4;
@@ -88,7 +88,7 @@
             // 
             L_color3.BackColor = Color.FromArgb(30, 60, 90);
             L_color3.ForeColor = SystemColors.ControlLightLight;
-            L_color3.Location = new Point(106, 205);
+            L_color3.Location = new Point(110, 205);
             L_color3.Name = "L_color3";
             L_color3.Size = new Size(50, 5);
             L_color3.TabIndex = 5;

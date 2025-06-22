@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.2";
+            VersionView.Text = "kmdv v0.5.3";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -223,7 +223,7 @@ namespace kmdv
 
             KCSView_rss.Text = ("\u200b" + ((int)(sindokcsMax * 100)).ToString()).Replace("\u200b0", "----");//\u200bはゼロ幅スペース　.Replace("\u200b", "")は不要
             KCSView_acs.Text = ("​\u200b" + ((int)PGAkcsSum).ToString() + "/" + PGAkcsMax.ToString("0.00")).Replace("​\u200b​0/", "----/").Replace("/0.00", "/ ----");
-            RAMview.Text = (GC.GetTotalMemory(false) / 1048576d).ToString("0.0");
+            RAMview.Text = (Environment.WorkingSet / 1048576d).ToString("0.0");
             MSView.Text = (DateTime.Now - getTime).TotalMilliseconds >= 2000
                 ? (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms"
                 : (DateTime.Now - getTime.AddSeconds(1)).TotalMilliseconds.ToString("0.0") + "ms";
