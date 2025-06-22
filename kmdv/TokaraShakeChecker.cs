@@ -16,9 +16,9 @@
 
         public void SetValues()
         {
-            if (value[1] > 20 && lastValue[1] <= 20 && lastValue[1] != -69)//-1.5
+            if (value[1] >= 20 && lastValue[1] < 20 && lastValue[1] != -69)//-1.5
                 Form1.PlaySound("tokara1.wav", true);
-            if (value[1] > 30 && value[3] > 1 && (lastValue[1] <= 30 || lastValue[3] <= 1) && lastValue[1] != -69)//0,-2.9
+            if (value[1] >= 30 && value[3] >= 1 && (lastValue[1] < 30 || lastValue[3] < 1) && lastValue[1] != -69)//0,-2.9
                 Form1.PlaySound("tokara2.wav", true);
 
             for (int i = 0; i < 4; i++)
