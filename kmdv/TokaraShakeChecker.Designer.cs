@@ -110,6 +110,7 @@
             MaximizeBox = false;
             Name = "TokaraShakeChecker";
             Text = "TokaraShakeChecker";
+            FormClosed += TokaraShakeChecker_FormClosed;
             ResumeLayout(false);
             PerformLayout();
         }
