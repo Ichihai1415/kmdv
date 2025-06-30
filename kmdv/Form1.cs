@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.3";
+            VersionView.Text = "kmdv v0.5.4";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -40,7 +40,7 @@ namespace kmdv
         internal static int latestSindo = 0;
         internal static StringBuilder kcsLog = new();
         public const string LOG_FOLDER = @"D:\Logs\kmdv";
-        internal TokaraShakeChecker tokaraShakeChecker = new();
+        internal TokaraShakeChecker? tokaraShakeChecker;
         public readonly static Point[] TokaraPoints =
         [
             new(39, 393),//屋久島
@@ -177,7 +177,11 @@ namespace kmdv
                 await Task.Delay(10);
             }
 
-            tokaraShakeChecker.Show();
+            if (File.Exists("enable-tokara"))
+            {
+                tokaraShakeChecker = new();
+                tokaraShakeChecker.Show();
+            }
 
             Gettimer.Interval = 1000 + getDelay % 1000 - DateTime.Now.Millisecond % 1000;
             Gettimer.Enabled = true;//start
@@ -267,23 +271,25 @@ namespace kmdv
                 KCSLevel_acsm.BackColor = Color.White;
                 return;//強モニ重くなって古いのが再生されないように
             }
-
-            if (SindoImg.Width == 352)
-                for (int i = 0; i < 4; i++)
-                {
-                    Color color = SindoImg.GetPixel(TokaraPoints[i].X, TokaraPoints[i].Y);
-                    int[] colors = [color.R, color.G, color.B];
-                    var value = (int)((RGB2Sindo[colors] + 3) * 10);
-                    tokaraShakeChecker.value[i] = value;
-                    tokaraShakeChecker.color[i] = color;
-                }
-            else
-                for (int i = 0; i < 4; i++)
-                {
-                    tokaraShakeChecker.value[i] = -69;
-                    tokaraShakeChecker.color[i] = Color.FromArgb(30, 60, 90);
-                }
-            tokaraShakeChecker.SetValues();
+            if (tokaraShakeChecker != null)
+            {
+                if (SindoImg.Width == 352)
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Color color = SindoImg.GetPixel(TokaraPoints[i].X, TokaraPoints[i].Y);
+                        int[] colors = [color.R, color.G, color.B];
+                        var value = (int)((RGB2Sindo[colors] + 3) * 10);
+                        tokaraShakeChecker.value[i] = value;
+                        tokaraShakeChecker.color[i] = color;
+                    }
+                else
+                    for (int i = 0; i < 4; i++)
+                    {
+                        tokaraShakeChecker.value[i] = -69;
+                        tokaraShakeChecker.color[i] = Color.FromArgb(30, 60, 90);
+                    }
+                tokaraShakeChecker.SetValues(getTime);
+            }
 
             GraphInsert_acss(PGAkcsSum);
             GraphInsert_acsm(PGAkcsMax);
