@@ -14,7 +14,7 @@
             InitializeComponent();
         }
 
-        public void SetValues()
+        public void SetValues(DateTime getTime)
         {
             if (value[1] >= 15 && lastValue[1] < 15 && lastValue[1] != -69)//-1.5
                 Form1.PlaySound("tokara1.wav", true);
@@ -34,6 +34,13 @@
             L_color1.BackColor = color[1];
             L_color2.BackColor = color[2];
             L_color3.BackColor = color[3];
+            if (File.Exists("enable_kasari_log"))
+            {
+                var path = "log\\kasari\\" + getTime.ToString("dd\\\\HH\\\\mm") + ".csv";
+                var data = getTime.ToString("yyyy/MM/dd HH:mm:ss") + "," + value[0] + "," + value[1] + "," + value[2] + "," + value[3] + "\n";
+                Directory.CreateDirectory("log\\kasari\\" + getTime.ToString("dd\\\\HH"));
+                File.WriteAllText(path, (File.Exists(path) ? File.ReadAllText(path) : "") + data);
+            }
         }
 
         private void TokaraShakeChecker_FormClosed(object sender, FormClosedEventArgs e)

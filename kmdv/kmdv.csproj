@@ -9,7 +9,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject>kmdv.Program</StartupObject>
     <Title>$(AssemblyName)</Title>
-    <Version>0.5.3</Version>
+    <Version>0.5.4</Version>
     <Authors>Ichihai1415</Authors>
     <Copyright>2024 ichihai1415</Copyright>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
