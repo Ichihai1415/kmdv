@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.6";
+            VersionView.Text = "kmdv v0.5.6.1";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -525,7 +525,7 @@ namespace kmdv
         /// <param name="isAC">kcs(acs-s/m)の場合True,rsmの場合False その他は基本True</param>
         public static void PlaySound(string fileName, bool isAC)
         {
-            if (StopAlertSound && !fileName.Contains("alarm"))
+            if (StopAlertSound && !fileName.Contains("alarm") && !fileName.Contains("tokara"))
             {
                 Debug.WriteLine("[PlaySound]アラート音再生無効中です");
                 return;
@@ -560,6 +560,11 @@ namespace kmdv
             if (!File.Exists("sound\\pga100+.wav"))
                 File.WriteAllBytes("sound\\pga100+.wav", Resources.pga100_wav);
 
+            if (!File.Exists("sound\\" + fileName))
+            {
+                Debug.WriteLine("[PlaySound]ファイルが存在しません: " + fileName);
+                return;
+            }
             if (isAC)
             {
                 if (player_ac != null)
