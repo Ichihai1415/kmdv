@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.5";
+            VersionView.Text = "kmdv v0.5.6";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -37,7 +37,11 @@ namespace kmdv
         internal static ObservableCollection<ObservableValue> GraphValue_rssm = [];
         internal static SoundPlayer? player_ac;
         internal static SoundPlayer? player_rs;
-        internal static int latestSindo = 0;
+        internal static bool StopAlertSound = false;
+        internal static double lastPGA = 0;
+
+
+        internal static int lastSindo = 0;
         internal static StringBuilder kcsLog = new();
         public const string LOG_FOLDER = @"D:\Logs\kmdv";
         internal TokaraShakeChecker? tokaraShakeChecker;
@@ -338,7 +342,7 @@ namespace kmdv
                     break;
             }
 
-            if (sindo > 2 && sindo - latestSindo > 0)
+            if (sindo > 2 && sindo - lastSindo > 0)
                 PlaySound("s" + sindo + ".wav", false);
             else if (getTime.Second % 2 == 0)
                 if (PGAkcsSum >= 2500)
@@ -346,7 +350,7 @@ namespace kmdv
                     PlaySound("alarm35.wav", true);
                     KCSLevel_acss.BackColor = Color.FromArgb(200, 0, 200);
                 }
-                else if (PGAkcsSum >= 1800)
+                else if (PGAkcsSum >= 1750)
                 {
                     PlaySound("alarm25.wav", true);
                     KCSLevel_acss.BackColor = Color.Red;
@@ -373,7 +377,7 @@ namespace kmdv
                 KCSLevel_acsm.BackColor = Color.White;
 
             if (sindo != 0)
-                latestSindo = sindo;
+                lastSindo = sindo;
             if (getTime.Second == 0)
                 GC.Collect();
         }
@@ -409,7 +413,7 @@ namespace kmdv
         {
             try
             {
-                Debug.WriteLine("image2kcs");
+                //Debug.WriteLine("image2kcs");
                 if (image.Width != 352 || image.Height != 400)
                     return [0, 0];
                 double kcsSum = 0;
@@ -453,7 +457,7 @@ namespace kmdv
         {
             try
             {
-                Debug.WriteLine("image2kcs");
+                //Debug.WriteLine("image2kcs");
                 if (image.Width != 352 || image.Height != 400)
                     return 0;
                 double kcsSum = 0;
@@ -521,25 +525,40 @@ namespace kmdv
         /// <param name="isAC">kcs(acs-s/m)の場合True,rsmの場合False その他は基本True</param>
         public static void PlaySound(string fileName, bool isAC)
         {
-            if (!Directory.Exists("sound"))
+            if (StopAlertSound && !fileName.Contains("alarm"))
             {
+                Debug.WriteLine("[PlaySound]アラート音再生無効中です");
+                return;
+            }
+            if (!Directory.Exists("sound"))
                 Directory.CreateDirectory("sound");
 
+            if (!File.Exists("sound\\alarm15.wav"))
                 File.WriteAllBytes("sound\\alarm15.wav", Resources.alarm15wav);
+            if (!File.Exists("sound\\alarm25.wav"))
                 File.WriteAllBytes("sound\\alarm25.wav", Resources.alarm25wav);
+            if (!File.Exists("sound\\alarm35.wav"))
                 File.WriteAllBytes("sound\\alarm35.wav", Resources.alarm35wav);
 
+            if (!File.Exists("sound\\s3.wav"))
                 File.WriteAllBytes("sound\\s3.wav", Resources.s3wav);
+            if (!File.Exists("sound\\s4.wav"))
                 File.WriteAllBytes("sound\\s4.wav", Resources.s4wav);
+            if (!File.Exists("sound\\s5.wav"))
                 File.WriteAllBytes("sound\\s5.wav", Resources.s5wav);
+            if (!File.Exists("sound\\s6.wav"))
                 File.WriteAllBytes("sound\\s6.wav", Resources.s6wav);
+            if (!File.Exists("sound\\s7.wav"))
                 File.WriteAllBytes("sound\\s7.wav", Resources.s7wav);
+            if (!File.Exists("sound\\s8.wav"))
                 File.WriteAllBytes("sound\\s8.wav", Resources.s8wav);
+            if (!File.Exists("sound\\s9.wav"))
                 File.WriteAllBytes("sound\\s9.wav", Resources.s9wav);
 
-                File.WriteAllBytes("sound\\tokara1.wav", Resources.tokara1wav);
-                File.WriteAllBytes("sound\\tokara2.wav", Resources.tokara2wav);
-            }
+            if (!File.Exists("sound\\pga20+.wav"))
+                File.WriteAllBytes("sound\\pga20+.wav", Resources.pga20_wav);
+            if (!File.Exists("sound\\pga100+.wav"))
+                File.WriteAllBytes("sound\\pga100+.wav", Resources.pga100_wav);
 
             if (isAC)
             {
@@ -563,6 +582,33 @@ namespace kmdv
                 player_rs = new SoundPlayer("sound\\" + fileName);
                 player_rs.Play();
             }
+        }
+
+
+        private void TSMI_StopAlertSound_Click(object sender, EventArgs e)
+        {
+            if (TSMI_StopAlertSound.Checked)
+            {
+                Debug.WriteLine("[TSMI_StopAlertSound_Click]アラート音再生を再開します");
+                T_StopAlertRestarter.Enabled = false;
+            }
+            else
+                Debug.WriteLine("[T_StopAlertRestarter_Tick]アラート音再生無効化を開始します");
+            TSMI_StopAlertSound.Checked = !TSMI_StopAlertSound.Checked;
+            T_StopAlertRestarter.Enabled = TSMI_StopAlertSound.Checked;
+            StopAlertSound = TSMI_StopAlertSound.Checked;
+        }
+
+        private void T_StopAlertRestarter_Tick(object sender, EventArgs e)
+        {
+            if (lastPGA < 0.5 || lastSindo <= 3)
+            {
+                Debug.WriteLine("[T_StopAlertRestarter_Tick]アラート音再生を再開します");
+                T_StopAlertRestarter.Enabled = false;
+                StopAlertSound = false; ;
+            }
+            else
+                Debug.WriteLine("[T_StopAlertRestarter_Tick]アラート音再生無効化を継続します");
         }
     }
 }

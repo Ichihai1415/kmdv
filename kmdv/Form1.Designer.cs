@@ -47,8 +47,12 @@
             LogView = new TextBox();
             MSView = new Label();
             Text_loading = new Label();
+            T_StopAlertRestarter = new System.Windows.Forms.Timer(components);
+            CMS = new ContextMenuStrip(components);
+            TSMI_StopAlertSound = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)MainImage).BeginInit();
             KCS_GroupBox.SuspendLayout();
+            CMS.SuspendLayout();
             SuspendLayout();
             // 
             // Gettimer
@@ -123,6 +127,7 @@
             // 
             KCSGraph.Location = new Point(5, 58);
             KCSGraph.Margin = new Padding(3, 4, 3, 4);
+            KCSGraph.MatchAxesScreenDataRatio = false;
             KCSGraph.Name = "KCSGraph";
             KCSGraph.Size = new Size(245, 134);
             KCSGraph.TabIndex = 11;
@@ -237,11 +242,30 @@
             Text_loading.TabIndex = 10;
             Text_loading.Text = "↻";
             // 
+            // T_StopAlertRestarter
+            // 
+            T_StopAlertRestarter.Interval = 600000;
+            T_StopAlertRestarter.Tick += T_StopAlertRestarter_Tick;
+            // 
+            // CMS
+            // 
+            CMS.Items.AddRange(new ToolStripItem[] { TSMI_StopAlertSound });
+            CMS.Name = "CMS";
+            CMS.Size = new Size(377, 48);
+            // 
+            // TSMI_StopAlertSound
+            // 
+            TSMI_StopAlertSound.Name = "TSMI_StopAlertSound";
+            TSMI_StopAlertSound.Size = new Size(376, 22);
+            TSMI_StopAlertSound.Text = "警告音再生10分間無効(acssは有効,経過後も高い場合延長)";
+            TSMI_StopAlertSound.Click += TSMI_StopAlertSound_Click;
+            // 
             // Form1
             // 
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(30, 60, 90);
             ClientSize = new Size(800, 400);
+            ContextMenuStrip = CMS;
             Controls.Add(Text_loading);
             Controls.Add(VersionView);
             Controls.Add(RAMview);
@@ -260,6 +284,7 @@
             ((System.ComponentModel.ISupportInitialize)MainImage).EndInit();
             KCS_GroupBox.ResumeLayout(false);
             KCS_GroupBox.PerformLayout();
+            CMS.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -283,5 +308,8 @@
         private Label KCSLevel_rssm;
         private Label KCSLevel_acss;
         private Label KCSLevel_acsm;
+        private System.Windows.Forms.Timer T_StopAlertRestarter;
+        private ContextMenuStrip CMS;
+        private ToolStripMenuItem TSMI_StopAlertSound;
     }
 }
