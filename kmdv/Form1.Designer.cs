@@ -180,11 +180,11 @@
             // 
             VersionView.AutoSize = true;
             VersionView.Font = new Font("Yu Gothic UI", 8F);
-            VersionView.Location = new Point(738, 0);
+            VersionView.Location = new Point(732, 0);
             VersionView.Name = "VersionView";
-            VersionView.Size = new Size(62, 13);
+            VersionView.Size = new Size(70, 13);
             VersionView.TabIndex = 9;
-            VersionView.Text = "kmdv v0.0.0";
+            VersionView.Text = "kmdv v0.0.0.0";
             // 
             // Text2
             // 
@@ -251,7 +251,7 @@
             // 
             CMS.Items.AddRange(new ToolStripItem[] { TSMI_StopAlertSound });
             CMS.Name = "CMS";
-            CMS.Size = new Size(377, 48);
+            CMS.Size = new Size(377, 26);
             // 
             // TSMI_StopAlertSound
             // 

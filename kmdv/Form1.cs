@@ -18,7 +18,7 @@ namespace kmdv
         public Form1()
         {
             InitializeComponent();
-            VersionView.Text = "kmdv v0.5.6";
+            VersionView.Text = "kmdv v0.5.6.2";
             LogView.Text = "start:" + DateTime.Now.ToString();
             if (File.Exists("backmap.png"))
                 MainImage.BackgroundImage = new Bitmap(File.OpenRead("backmap.png"));
@@ -27,11 +27,11 @@ namespace kmdv
         }
 
         internal static Dictionary<int[], double> RGB2kcs = new(new ArrayEqualityComparer<int>());
-        internal readonly static HttpClient client = new();
-        internal readonly static int getDelay = 1500;
+        internal static readonly HttpClient client = new();
+        internal static readonly int getDelay = 1500;
         internal static double[] kcsMaxs = [9, 0, 0, 0];//最後の分/10(切り捨て),rssm,acsm,acss
         internal static string kcsMaxsText = "";
-        internal readonly static int GraphValueCount = 60;
+        internal static readonly int GraphValueCount = 60;
         internal static ObservableCollection<ObservableValue> GraphValue_acss = [];
         internal static ObservableCollection<ObservableValue> GraphValue_acsm = [];
         internal static ObservableCollection<ObservableValue> GraphValue_rssm = [];
@@ -45,7 +45,7 @@ namespace kmdv
         internal static StringBuilder kcsLog = new();
         public const string LOG_FOLDER = @"D:\Logs\kmdv";
         internal TokaraShakeChecker? tokaraShakeChecker;
-        public readonly static Point[] TokaraPoints =
+        public static readonly Point[] TokaraPoints =
         [
             new(39, 393),//屋久島
             new(146,88),//笠利
@@ -378,6 +378,7 @@ namespace kmdv
 
             if (sindo != 0)
                 lastSindo = sindo;
+            lastPGA = PGAkcsMax;
             if (getTime.Second == 0)
                 GC.Collect();
         }
@@ -525,7 +526,7 @@ namespace kmdv
         /// <param name="isAC">kcs(acs-s/m)の場合True,rsmの場合False その他は基本True</param>
         public static void PlaySound(string fileName, bool isAC)
         {
-            if (StopAlertSound && !fileName.Contains("alarm"))
+            if (StopAlertSound && !fileName.Contains("alarm") && !fileName.Contains("tokara"))
             {
                 Debug.WriteLine("[PlaySound]アラート音再生無効中です");
                 return;
@@ -560,6 +561,11 @@ namespace kmdv
             if (!File.Exists("sound\\pga100+.wav"))
                 File.WriteAllBytes("sound\\pga100+.wav", Resources.pga100_wav);
 
+            if (!File.Exists("sound\\" + fileName))
+            {
+                Debug.WriteLine("[PlaySound]ファイルが存在しません: " + fileName);
+                return;
+            }
             if (isAC)
             {
                 if (player_ac != null)
@@ -605,7 +611,8 @@ namespace kmdv
             {
                 Debug.WriteLine("[T_StopAlertRestarter_Tick]アラート音再生を再開します");
                 T_StopAlertRestarter.Enabled = false;
-                StopAlertSound = false; ;
+                TSMI_StopAlertSound.Checked = false;
+                StopAlertSound = false;
             }
             else
                 Debug.WriteLine("[T_StopAlertRestarter_Tick]アラート音再生無効化を継続します");
